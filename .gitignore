@@ -1,0 +1,44 @@
+# --- Segurança e Credenciais ---
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# --- Python / Django / Ambientes Virtuais ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+db.sqlite3
+/media/
+/staticfiles/
+
+# --- Frontend (Node / Vue / Vite) ---
+node_modules/
+dist/
+dist-ssr/
+*.local
+.eslintcache
+
+# --- IDEs e Editores de Código ---
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# --- Sistema Operacional ---
+.DS_Store
+Thumbs.db
+
+# --- Ferramentas de Testes e APIs ---
+.openpost/
+.pytest_cache/
+htmlcov/
+.tox/
