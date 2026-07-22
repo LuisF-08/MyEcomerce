@@ -1,11 +1,17 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { RouterView } from 'vue-router';
+import Navbar from './components/layout/Navbar.vue';
+import Footer from './components/layout/Footer.vue';
+import CarrinhoDrawer from './components/cart/CarrinhoDrawer.vue';
+import Toast from "primevue/toast"
+</script>
 
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <div id="app">
+    <Navbar />
+    <CarrinhoDrawer />
+    <Toast position="top-left" />
+    <RouterView />
+    <Footer />
+  </div>
 </template>
-
-<style scoped></style>

@@ -24,9 +24,26 @@ class CategoriaSerializer(serializers.ModelSerializer):
 
 
 class ProdutoSerializer(serializers.ModelSerializer):
+    categoria_nome = serializers.CharField(
+        source="categoria.nome",
+        read_only=True
+    )
+
     class Meta:
         model = Produto
-        fields = "__all__"
+        fields = [
+            "id",
+            "nome",
+            "descricao",
+            "preco",
+            "imagem_1",
+            "imagem_2",
+            "categoria",
+            "categoria_nome",
+            "destaque",
+            "ativo",
+            "quantidade"
+        ]
 
     def validate_nome(self, value):
         if len(value.strip()) < 3:

@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.my-app-dark, .my-app-dark *));
+
+:root {
+  --bg-base: #fafafa;
+  --bg-gradient-1: #fff7ed; /* orange-50 */
+  --bg-gradient-2: #fafafa; /* zinc-50 */
+  --bg-gradient-3: #fef3e2;
+  --scrollbar-track: transparent;
+  --scrollbar-thumb: #e4e4e7; /* zinc-200 */
+  --scrollbar-thumb-hover: #fb923c; /* orange-400 */
+}
+
+.my-app-dark {
+  --bg-base: #09090b; /* zinc-950 */
+  --bg-gradient-1: #09090b;
+  --bg-gradient-2: #000000;
+  --bg-gradient-3: #1c1006; /* toque âmbar bem escuro */
+  --scrollbar-track: transparent;
+  --scrollbar-thumb: #27272a; /* zinc-800 */
+  --scrollbar-thumb-hover: #f59e0b; /* amber-500 */
+}
+
+html {
+  background-color: var(--bg-base);
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--bg-base);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 20% 0%, var(--bg-gradient-1) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 100% 20%, var(--bg-gradient-3) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 0% 100%, var(--bg-gradient-2) 0%, transparent 50%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  transition: background-color 0.3s ease;
+}
+
+html,
+body {
+  transition: background-color 0.3s ease;
+}
+
+.no-transition,
+.no-transition * {
+  transition: none !important;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 2px solid var(--bg-base);
+  background-clip: padding-box;
+  transition: background-color 0.25s ease;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover);
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

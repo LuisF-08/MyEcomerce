@@ -3,19 +3,29 @@ from rest_framework import viewsets
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.permissions import AllowAny
 from api.permissions import AdminOuLeitura
+from drf_spectacular.utils import extend_schema
+from rest_framework.parsers import MultiPartParser, FormParser
+
 from api.serializers.catalogo import (
     CategoriaSerializer,
     ProdutoSerializer,
 )
 from catalogo.models import Categoria, Produto
 
-
+@extend_schema(
+    request=ProdutoSerializer,
+    responses=ProdutoSerializer,
+)
 class ProdutoViewSet(viewsets.ModelViewSet):
     queryset = Produto.objects.all()
     serializer_class = ProdutoSerializer
     permission_classes = [AdminOuLeitura]
 
-    # filtros adicionados
+    parser_classes = (
+        MultiPartParser,
+        FormParser,
+    )
+
     filter_backends = [
         DjangoFilterBackend,
         SearchFilter,
