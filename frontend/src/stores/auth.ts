@@ -1,118 +1,87 @@
 import { defineStore } from "pinia"
-import { ref, computed } from "vue"
-
-import type { Usuario } from "@/types/usuario"
-
+import { computed, ref } from "vue"
 import * as authService from "@/services/auth"
-
-import axios from "axios"
+import type {
+    Usuario,
+    LoginRequest
+} from "@/types/auth"
 
 export const useAuthStore = defineStore("auth", () => {
 
-    const usuario = ref<Usuario | null>(null)
-
-    const accessToken = ref(
-        localStorage.getItem("access") || ""
+    const access = ref<string | null>(
+        localStorage.getItem("access")
     )
 
-    const refreshToken = ref(
-        localStorage.getItem("refresh") || ""
+    const refresh = ref<string | null>(
+        localStorage.getItem("refresh")
+    )
+
+    const usuario = ref<Usuario | null>(
+        JSON.parse(localStorage.getItem("usuario") || "null")
     )
 
     const loading = ref(false)
 
-    async function login(
-        email: string,
-        password: string
-    ) {
+    const autenticado = computed(() => !!access.value)
 
+    async function login(dados: LoginRequest) {
         loading.value = true
-
         try {
-
-            const tokens = await authService.login(
-                email,
-                password
-            )
-
-            accessToken.value = tokens.access
-            refreshToken.value = tokens.refresh
-
-            localStorage.setItem(
-                "access",
-                tokens.access
-            )
-
-            localStorage.setItem(
-                "refresh",
-                tokens.refresh
-            )
-
-            usuario.value = await authService.me()
-
+            const response = await authService.login(dados)
+            access.value = response.access
+            refresh.value = response.refresh
+            usuario.value = response.user
+            localStorage.setItem("access", response.access)
+            localStorage.setItem("refresh", response.refresh)
+        } catch (error) {
+            throw error
         } finally {
-
             loading.value = false
-
         }
-
+    
     }
 
     function logout() {
-
+        access.value = null
+        refresh.value = null
         usuario.value = null
-
-        accessToken.value = ""
-
-        refreshToken.value = ""
-
         localStorage.removeItem("access")
         localStorage.removeItem("refresh")
-
+        localStorage.removeItem("usuario")
     }
 
-    async function carregarUsuario() {
-
-        if (!accessToken.value) {
-            return
-        }
-
-        try {
-
-            usuario.value =
-                await authService.me()
-
+    async function refreshToken() {
+        if(!refresh.value) return
+        try{
+            const response = await authService.refreshToken(
+                refresh.value
+            )
+            access.value = response.access
+            localStorage.setItem(
+                "access", response.access
+            )
         } catch {
-
             logout()
-
         }
-
     }
-
-    const isAuthenticated = computed(() => {
-
-        return accessToken.value !== ""
-
-    })
 
     return {
+        
+        access,
+
+        refresh,
 
         usuario,
 
-        accessToken,
-
-        refreshToken,
-
         loading,
+
+        autenticado,
 
         login,
 
         logout,
 
-        carregarUsuario,
-
-        isAuthenticated
+        refreshToken
 
     }
 

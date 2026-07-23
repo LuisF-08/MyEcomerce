@@ -1,32 +1,30 @@
 import api from "@/api/api"
 
-export async function login(
-    email: string,
-    password: string
-) {
-    const response = await api.post("/token/", {
-        username: email,
-        password,
-    })
+import type {
+    LoginRequest,
+    LoginResponse,
+    RefreshResponse
+} from "@/types/auth"
 
+export async function login(dados: LoginRequest): Promise<LoginResponse> {
+    const response = await api.post<LoginResponse>(
+        "/token/",
+        dados
+    )
     return response.data
 }
 
-export async function me() {
-    const response = await api.get("/me")
+export async function refreshToken(
+    refresh: string
+): Promise<RefreshResponse> {
+
+    const response = await api.post<RefreshResponse>(
+        "/token/refresh/",
+        {
+            refresh
+        }
+    )
 
     return response.data
-}
 
-export async function refresh(refreshToken: string){
-    const response = await api.post("/token/refresh/", {
-        refresh: refreshToken,
-    })
-
-    return response.data
-}
-
-export function logout() {
-    localStorage.removeItem("access")
-    localStorage.removeItem("refresh")
 }

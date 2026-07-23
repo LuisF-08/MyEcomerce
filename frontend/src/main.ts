@@ -32,7 +32,6 @@ const app = createApp(App)
 
 app.use(createPinia())
 app.use(router)
-app.use(ToastService);
 
 app.use(PrimeVue, {
   ripple: true,
