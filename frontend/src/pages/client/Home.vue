@@ -42,49 +42,55 @@ onMounted(async () => {
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        <div class="flex flex-wrap gap-4 py-6">
-            <CategoriaCard
+        <!-- Chips de categoria: rolagem horizontal no mobile, quebra em linhas a partir do sm -->
+        <div
+            class="flex sm:flex-wrap gap-3 py-4 sm:py-6 overflow-x-auto sm:overflow-visible
+                   -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory
+                   [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+            <div
                 v-for="categoria in categorias"
                 :key="categoria.id"
-                :categoria="categoria"
-            />
+                class="shrink-0 snap-start"
+            >
+                <CategoriaCard :categoria="categoria" />
+            </div>
         </div>
 
-        <h2 class="text-2xl font-bold text-zinc-800 mt-4 mb-6">
+        <h2 class="text-xl sm:text-2xl font-bold text-zinc-800 mt-2 sm:mt-4 mb-4 sm:mb-6">
             Destaques
         </h2>
 
-        <ProdutoGrid class ="mb-10"
+        <ProdutoGrid class="mb-8 sm:mb-10"
             :produtos="produtos"
             :carregando="carregandoProdutos"
         />
 
         <section
-    v-for="categoria in categorias"
-    :key="categoria.id"
-    class="mt-16"
->
-
-    <div class="flex justify-between items-center mb-6">
-
-        <h2 class="text-2xl font-bold">
-
-            {{ categoria.nome }}
-
-        </h2>
-
-        <RouterLink
-            :to="`/categoria/${categoria.id}`"
+            v-for="categoria in categorias"
+            :key="categoria.id"
+            class="mt-10 sm:mt-16"
         >
-            Ver todos
-        </RouterLink>
 
-    </div>
+            <div class="flex justify-between items-center gap-3 mb-4 sm:mb-6">
 
-    <ProdutoGrid
-        :produtos="produtoStore.produtosDaCategoria(categoria.id)"
-    />
-    </section>
+                <h2 class="text-xl sm:text-2xl font-bold truncate">
+                    {{ categoria.nome }}
+                </h2>
+
+                <RouterLink
+                    :to="`/categoria/${categoria.id}`"
+                    class="shrink-0 text-sm font-semibold text-orange-600 dark:text-orange-400 hover:underline"
+                >
+                    Ver todos
+                </RouterLink>
+
+            </div>
+
+            <ProdutoGrid
+                :produtos="produtoStore.produtosDaCategoria(categoria.id)"
+            />
+        </section>
     </div>
     <Depoiments />
 </div>

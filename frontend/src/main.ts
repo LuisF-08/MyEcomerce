@@ -2,6 +2,25 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config'
 import Aura from '@primevue/themes/aura'
+import { definePreset } from '@primevue/themes'
+
+const MyPreset = definePreset(Aura, {
+  semantic: {
+    primary: {
+      50: '#e1fce7',
+      100: '#bdfab9',
+      200: '#89f688',
+      300: '#4cf45e',
+      400: '#15f242',
+      500: '#03f25b',
+      600: '#02c748',
+      700: '#029c39',
+      800: '#027a2e',
+      900: '#016427',
+      950: '#013713'
+    }
+  }
+})
 import ToastService from 'primevue/toastservice'
 import ConfirmationService from 'primevue/confirmationservice'
 import 'primeicons/primeicons.css'
@@ -36,7 +55,7 @@ app.use(router)
 app.use(PrimeVue, {
   ripple: true,
   theme: {
-    preset: Aura,
+    preset: MyPreset,
     options: {
       darkModeSelector: '.my-app-dark',
       cssLayer: false,

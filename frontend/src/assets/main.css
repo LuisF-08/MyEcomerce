@@ -1,25 +1,46 @@
 @import "tailwindcss";
 
+@theme {
+  --color-orange-50: #03f25b;
+  --color-orange-100: #03f25b;
+  --color-orange-200: #03f25b;
+  --color-orange-300: #03f25b;
+  --color-orange-400: #03f25b;
+  --color-orange-500: #03f25b;
+  --color-orange-600: #03f25b;
+  --color-orange-700: #03f25b;
+  --color-orange-800: #03f25b;
+  --color-orange-900: #03f25b;
+  --color-orange-950: #03f25b;
+
+  --color-amber-500: #03f25b;
+  /* Amber também usado para destaques */
+}
+
 @custom-variant dark (&:where(.my-app-dark, .my-app-dark *));
 
 :root {
-  --bg-base: #fafafa;
-  --bg-gradient-1: #fff7ed; /* orange-50 */
-  --bg-gradient-2: #fafafa; /* zinc-50 */
-  --bg-gradient-3: #fef3e2;
+  --bg-base: #f8fafc;
+  --bg-gradient-1: #03f25b35;
+  /* Mais visível para o efeito de tinta */
+  --bg-gradient-2: #ffffff;
+  --bg-gradient-3: #03f25b25;
   --scrollbar-track: transparent;
-  --scrollbar-thumb: #e4e4e7; /* zinc-200 */
-  --scrollbar-thumb-hover: #fb923c; /* orange-400 */
+  --scrollbar-thumb: #e2e8f0;
+  /* slate-200 */
+  --scrollbar-thumb-hover: #03f25b;
 }
 
 .my-app-dark {
-  --bg-base: #09090b; /* zinc-950 */
-  --bg-gradient-1: #09090b;
-  --bg-gradient-2: #000000;
-  --bg-gradient-3: #1c1006; /* toque âmbar bem escuro */
+  --bg-base: #020617;
+  --bg-gradient-1: #03f25b25;
+  /* Mais visível para o efeito de tinta */
+  --bg-gradient-2: #020617;
+  --bg-gradient-3: #03f25b15;
   --scrollbar-track: transparent;
-  --scrollbar-thumb: #27272a; /* zinc-800 */
-  --scrollbar-thumb-hover: #f59e0b; /* amber-500 */
+  --scrollbar-thumb: #1e293b;
+  /* slate-800 */
+  --scrollbar-thumb-hover: #03f25b;
 }
 
 html {
@@ -30,16 +51,35 @@ body {
   min-height: 100vh;
   background-color: var(--bg-base);
   background-image:
-    radial-gradient(ellipse 80% 50% at 20% 0%, var(--bg-gradient-1) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 100% 20%, var(--bg-gradient-3) 0%, transparent 55%),
-    radial-gradient(ellipse 60% 40% at 0% 100%, var(--bg-gradient-2) 0%, transparent 50%);
+    radial-gradient(circle at 10% 20%, var(--bg-gradient-1) 0%, var(--bg-gradient-1) 5%, transparent 25%),
+    radial-gradient(circle at 85% 15%, var(--bg-gradient-3) 0%, var(--bg-gradient-3) 10%, transparent 35%),
+    radial-gradient(circle at 90% 75%, var(--bg-gradient-1) 0%, var(--bg-gradient-1) 8%, transparent 30%),
+    radial-gradient(circle at 15% 85%, var(--bg-gradient-3) 0%, var(--bg-gradient-3) 6%, transparent 25%),
+    radial-gradient(circle at 50% 45%, var(--bg-gradient-1) 0%, var(--bg-gradient-1) 4%, transparent 20%),
+    radial-gradient(circle at 35% 10%, var(--bg-gradient-3) 0%, var(--bg-gradient-3) 3%, transparent 15%),
+    radial-gradient(circle at 70% 90%, var(--bg-gradient-1) 0%, var(--bg-gradient-1) 5%, transparent 22%);
   background-attachment: fixed;
   background-repeat: no-repeat;
-  transition: background-color 0.3s ease;
+  background-size: 150% 150%;
+  animation: bg-float 20s ease-in-out infinite;
+  overflow-x: hidden;
+}
+
+@keyframes bg-float {
+
+  0%,
+  100% {
+    background-position: 0% 0%, 100% 20%, 0% 100%;
+  }
+
+  50% {
+    background-position: 5% 5%, 95% 25%, 5% 95%;
+  }
 }
 
 html,
 body {
+  overflow-x: hidden;
   transition: background-color 0.3s ease;
 }
 
@@ -85,4 +125,31 @@ html {
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+/* Seleção de texto customizada */
+::selection {
+  background-color: var(--scrollbar-thumb-hover);
+  color: #ffffff;
+}
+
+/* Foco acessível */
+:focus-visible {
+  outline: 2px solid var(--scrollbar-thumb-hover);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Placeholder de inputs */
+::placeholder {
+  color: #a1a1aa;
+  /* zinc-400 */
+  opacity: 1;
+}
+
+.my-app-dark ::placeholder {
+  color: #52525b;
+  /* zinc-600 */
 }

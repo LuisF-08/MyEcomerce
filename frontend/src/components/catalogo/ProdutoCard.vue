@@ -47,7 +47,7 @@ function adicionarAoCarrinho() {
 
 <template>
 <div
-    class="group rounded-3xl overflow-hidden bg-white/90 dark:bg-white/10 backdrop-blur-xl backdrop-saturate-150 border border-zinc-200 dark:border-white/15 shadow-lg shadow-zinc-200/40 dark:shadow-black/40 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col cursor-pointer"
+    class="group rounded-2xl sm:rounded-3xl overflow-hidden bg-white/90 dark:bg-white/10 backdrop-blur-xl backdrop-saturate-150 border border-zinc-200 dark:border-white/15 shadow-lg shadow-zinc-200/40 dark:shadow-black/40 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col cursor-pointer"
     @click="abrirProduto"
 >
     <div class="relative w-full aspect-[4/5] bg-zinc-100 dark:bg-white/5 overflow-hidden">
@@ -63,7 +63,7 @@ function adicionarAoCarrinho() {
             v-else
             class="w-full h-full flex items-center justify-center bg-zinc-100 dark:bg-white/5 text-zinc-400 dark:text-zinc-500"
         >
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 sm:w-12 sm:h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3 8.25v7.5A2.25 2.25 0 005.25 18h13.5A2.25 2.25 0 0021 15.75v-7.5A2.25 2.25 0 0018.75 6H5.25A2.25 2.25 0 003 8.25z" />
             </svg>
         </div>
@@ -71,37 +71,37 @@ function adicionarAoCarrinho() {
         <div class="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-white/5"></div>
     </div>
 
-    <div class="p-5 flex flex-col flex-1 backdrop-blur-md">
-        <span class="inline-flex w-fit px-3 py-1 rounded-full bg-orange-500/10 dark:bg-orange-400/10 border border-orange-500/20 text-orange-600 dark:text-orange-300 text-xs font-semibold tracking-wide mb-3">
+    <div class="p-3 sm:p-5 flex flex-col flex-1 backdrop-blur-md">
+        <span class="inline-flex w-fit px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-orange-500/10 dark:bg-orange-400/10 border border-orange-500/20 text-orange-600 dark:text-orange-300 text-[10px] sm:text-xs font-semibold tracking-wide mb-2 sm:mb-3">
             {{ produto.categoria_nome }}
         </span>
 
-        <h3 class="font-semibold text-zinc-800 leading-snug line-clamp-1">
+        <h3 class="font-semibold text-sm sm:text-base text-zinc-800 leading-snug line-clamp-1">
             {{ produto.nome }}
         </h3>
 
-        <p class="text-zinc-500 dark:text-zinc-400 text-sm mt-1 line-clamp-2 flex-1">
+        <p class="text-zinc-500 dark:text-zinc-400 text-xs sm:text-sm mt-1 line-clamp-2 flex-1">
             {{ produto.descricao }}
         </p>
 
-        <div class="flex items-center justify-between mt-4">
-            <p class="font-bold text-xl text-orange-500 dark:text-orange-400">
+        <div class="flex items-center justify-between gap-2 mt-3 sm:mt-4">
+            <p class="font-bold text-base sm:text-xl text-orange-500 dark:text-orange-400 truncate">
                 {{ formatarPreco(produto.preco) }}
             </p>
-        
-            <div class="flex gap-2">
+
+            <div class="flex gap-1.5 sm:gap-2 shrink-0">
                 <button
                     @click.stop="abrirProduto"
-                    class="rounded-xl px-3 py-2 font-semibold border border-zinc-200 text-zinc-600 hover:bg-zinc-100 transition-all"
+                    class="rounded-lg sm:rounded-xl px-2.5 sm:px-3 py-1.5 sm:py-2 font-semibold border border-zinc-200 text-zinc-600 hover:bg-zinc-100 transition-all"
                 >
-                    <i class="pi pi-eye"/>
+                    <i class="pi pi-eye text-sm"/>
                 </button>
-        
+
                 <button
                     @click.stop="adicionarAoCarrinho"
-                    class="rounded-xl px-5 py-2 font-semibold bg-orange-500 text-white hover:bg-orange-600 transition-all shadow-lg shadow-orange-500/30"
+                    class="rounded-lg sm:rounded-xl px-3 sm:px-5 py-1.5 sm:py-2 font-semibold bg-orange-500 text-white hover:bg-orange-600 transition-all shadow-lg shadow-orange-500/30"
                 >
-                    <i class="pi pi-cart-plus"/>
+                    <i class="pi pi-cart-plus text-sm"/>
                 </button>
             </div>
         </div>

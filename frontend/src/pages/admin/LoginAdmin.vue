@@ -65,7 +65,7 @@ async function handleLogin() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-zinc-50 flex items-center justify-center px-4">
+  <div class="min-h-screen bg-zinc-50 dark:bg-black flex items-center justify-center px-4">
     <div class="bg-white rounded-2xl shadow-lg border border-zinc-100 p-8 w-full max-w-sm">
       
       <!-- Cabeçalho do Card -->

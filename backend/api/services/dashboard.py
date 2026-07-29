@@ -3,7 +3,8 @@ from django.db.models import Sum, Avg, Count
 from django.db.models.functions import TruncMonth
 from django.utils import timezone
 from decimal import Decimal
-from solicitacao.models import Solicitacao, ItemSolicitacao, StatusSolicitacao, Produto
+from solicitacao.models import Solicitacao, ItemSolicitacao, StatusSolicitacao
+from catalogo.models import Produto
 
 # Constantes de legibilidade 
 LIMITE_ULTIMOS_PEDIDOS = 5
@@ -27,9 +28,9 @@ class DashboardService:
         )["total"] or Decimal("0.00")
 
         # Média de produtos por pedido calculada dinamicamente 
-        produto_medio = ItemSolicitacao.objects.aggregate(
-            media=Avg("quantidade")
-        )["media"] or 0.0
+        ticket_medio = solicitacoes_concluidas.aggregate(
+                media=Avg("total")
+            )["media"] or Decimal("0.00")
 
         # Total de novos pedidos
         novos_pedidos = Solicitacao.objects.filter(
@@ -40,10 +41,10 @@ class DashboardService:
         total_pedidos = Solicitacao.objects.count()
 
         return {
-            "faturamento": round(float(faturamento), 2),  
+            "faturamento": round(float(faturamento), 2),
             "pedidos_novos": novos_pedidos,
             "total_pedidos": total_pedidos,
-            "produto_medio": round(produto_medio, 1)  
+            "produto_medio": round(float(ticket_medio), 2)
         }
 
     @staticmethod
@@ -99,22 +100,36 @@ class DashboardService:
     @staticmethod
     def obter_ultimos_pedidos():
         """
-        Retorna os últimos pedidos formatados.
-        Usa o limite definido por constante (Ponto 6) e acessa o campo 'nome' corretamente (Ponto 4).
+        Retorna os últimos pedidos formatados, já incluindo telefone,
+        localização e itens do pedido para exibição no card do dashboard.
         """
         ultimos = Solicitacao.objects.all().order_by("-criado_em")[:LIMITE_ULTIMOS_PEDIDOS]
-
-        return [
-            {
+    
+        resultado = []
+    
+        for u in ultimos:
+            itens = [
+                {
+                    "produto_nome": item.produto_nome,
+                    "quantidade": item.quantidade,
+                }
+                for item in ItemSolicitacao.objects.filter(solicitacao=u)
+            ]
+    
+            resultado.append({
                 "id": u.id,
-                "cliente": u.nome,  
+                "cliente": u.nome,
+                "telefone": u.telefone,
+                "cidade": u.cidade,
+                "estado": u.estado,
                 "total": round(float(u.total), 2),
                 "status": u.get_status_display(),
-                "criado_em": u.criado_em.strftime("%d/%m/%Y %H:%M")
-            }
-            for u in ultimos
-        ]
-
+                "criado_em": u.criado_em.isoformat(),
+                "itens": itens,
+            })
+    
+        return resultado
+        
     @staticmethod
     def gerar_relatorio_csv(response):
         """

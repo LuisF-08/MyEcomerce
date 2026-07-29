@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { useAuthStore } from "@/stores/auth"; 
+import { useAuthStore } from "@/stores/auth";
 
 const routes = [
     {
@@ -19,14 +19,13 @@ const routes = [
             {
                 path: "categoria/:slug",
                 name: "categoria",
-                component: () => import("@/pages/client/Produtos.vue") 
+                component: () => import("@/pages/client/Produtos.vue")
             },
             {
                 path: "produto/:id",
                 name: "produto",
                 component: () => import("@/pages/client/Produto.vue")
             },
-            // 💡 ADICIONE ESTA ROTA AQUI:
             {
                 path: "sobre",
                 name: "sobre",
@@ -35,14 +34,14 @@ const routes = [
         ]
     },
     {
+        path: "/login",
+        name: "login",
+        component: () => import("@/pages/admin/LoginAdmin.vue")
+    },
+    {
         path: "/admin",
         component: () => import("@/components/layout/AdminLayout.vue"),
         children: [
-            {
-                path: "login",
-                name: "login",
-                component: () => import("@/pages/admin/LoginAdmin.vue")
-            },
             {
                 path: "",
                 name: "admin-dashboard",
@@ -58,6 +57,39 @@ const routes = [
                 meta: {
                     requiresAuth: true
                 }
+            },
+            // 💡 ROTAS NOVAS usadas pela AppSidebar:
+            {
+                path: "categorias",
+                name: "admin-categorias",
+                component: () => import("@/pages/admin/CategoriaAdmin.vue"),
+                meta: {
+                    requiresAuth: true
+                }
+            },
+            {
+                path: "solicitacoes",
+                name: "admin-solicitacoes",
+                component: () => import("@/pages/admin/SolicitacoesAdmin.vue"),
+                meta: {
+                    requiresAuth: true
+                }
+            },
+            {
+                path: "loja",
+                name: "admin-loja",
+                component: () => import("@/pages/admin/LojaAdmin.vue"),
+                meta: {
+                    requiresAuth: true
+                }
+            },
+            {
+                path: "configuracoes",
+                name: "admin-configuracoes",
+                component: () => import("@/pages/admin/ConfiguracaoAdmin.vue"),
+                meta: {
+                    requiresAuth: true
+                }
             }
         ]
     }
@@ -65,8 +97,17 @@ const routes = [
 
 const router = createRouter({
     history: createWebHistory(),
-    routes
-});
+    routes,
+    scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+        return savedPosition
+    }
+    if (to.hash) {
+        return { el: to.hash, behavior: 'smooth' }
+    }
+    return { top: 0, behavior: 'instant' }
+    },
+})
 
 // Guard de navegação para proteger as rotas
 router.beforeEach((to) => {
@@ -77,5 +118,7 @@ router.beforeEach((to) => {
         };
     }
 });
+
+
 
 export default router;
