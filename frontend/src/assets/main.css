@@ -1,91 +1,59 @@
 @import "tailwindcss";
 
 @theme {
-  --color-orange-50: #03f25b;
-  --color-orange-100: #03f25b;
-  --color-orange-200: #03f25b;
-  --color-orange-300: #03f25b;
-  --color-orange-400: #03f25b;
-  --color-orange-500: #03f25b;
-  --color-orange-600: #03f25b;
-  --color-orange-700: #03f25b;
-  --color-orange-800: #03f25b;
-  --color-orange-900: #03f25b;
-  --color-orange-950: #03f25b;
+  /* Escala Esmeralda Elegante */
+  --color-orange-50: #ecfdf5;
+  --color-orange-100: #d1fae5;
+  --color-orange-200: #a7f3d0;
+  --color-orange-300: #6ee7b7;
+  --color-orange-400: #34d399;
+  --color-orange-500: #10b981;
+  /* Verde Botão Principal */
+  --color-orange-600: #059669;
+  --color-orange-700: #047857;
+  --color-orange-800: #065f46;
+  --color-orange-900: #064e3b;
+  --color-orange-950: #022c22;
 
-  --color-amber-500: #03f25b;
-  /* Amber também usado para destaques */
+  --color-amber-500: #10b981;
 }
 
 @custom-variant dark (&:where(.my-app-dark, .my-app-dark *));
 
 :root {
   --bg-base: #f8fafc;
-  --bg-gradient-1: #03f25b35;
-  /* Mais visível para o efeito de tinta */
+  --bg-gradient-1: rgba(16, 185, 129, 0.07);
   --bg-gradient-2: #ffffff;
-  --bg-gradient-3: #03f25b25;
+  --bg-gradient-3: rgba(5, 150, 105, 0.05);
   --scrollbar-track: transparent;
-  --scrollbar-thumb: #e2e8f0;
-  /* slate-200 */
-  --scrollbar-thumb-hover: #03f25b;
+  --scrollbar-thumb: #cbd5e1;
+  --scrollbar-thumb-hover: #10b981;
 }
 
 .my-app-dark {
-  --bg-base: #020617;
-  --bg-gradient-1: #03f25b25;
-  /* Mais visível para o efeito de tinta */
-  --bg-gradient-2: #020617;
-  --bg-gradient-3: #03f25b15;
+  --bg-base: #022c22;
+  --bg-gradient-1: rgba(16, 185, 129, 0.12);
+  --bg-gradient-2: #022c22;
+  --bg-gradient-3: rgba(5, 150, 105, 0.08);
   --scrollbar-track: transparent;
-  --scrollbar-thumb: #1e293b;
-  /* slate-800 */
-  --scrollbar-thumb-hover: #03f25b;
+  --scrollbar-thumb: #065f46;
+  --scrollbar-thumb-hover: #34d399;
 }
 
 html {
   background-color: var(--bg-base);
+  scroll-behavior: smooth;
 }
 
 body {
   min-height: 100vh;
   background-color: var(--bg-base);
   background-image:
-    radial-gradient(circle at 10% 20%, var(--bg-gradient-1) 0%, var(--bg-gradient-1) 5%, transparent 25%),
-    radial-gradient(circle at 85% 15%, var(--bg-gradient-3) 0%, var(--bg-gradient-3) 10%, transparent 35%),
-    radial-gradient(circle at 90% 75%, var(--bg-gradient-1) 0%, var(--bg-gradient-1) 8%, transparent 30%),
-    radial-gradient(circle at 15% 85%, var(--bg-gradient-3) 0%, var(--bg-gradient-3) 6%, transparent 25%),
-    radial-gradient(circle at 50% 45%, var(--bg-gradient-1) 0%, var(--bg-gradient-1) 4%, transparent 20%),
-    radial-gradient(circle at 35% 10%, var(--bg-gradient-3) 0%, var(--bg-gradient-3) 3%, transparent 15%),
-    radial-gradient(circle at 70% 90%, var(--bg-gradient-1) 0%, var(--bg-gradient-1) 5%, transparent 22%);
+    radial-gradient(circle at 15% 15%, var(--bg-gradient-1) 0%, transparent 30%),
+    radial-gradient(circle at 85% 85%, var(--bg-gradient-3) 0%, transparent 35%);
   background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-size: 150% 150%;
-  animation: bg-float 20s ease-in-out infinite;
   overflow-x: hidden;
-}
-
-@keyframes bg-float {
-
-  0%,
-  100% {
-    background-position: 0% 0%, 100% 20%, 0% 100%;
-  }
-
-  50% {
-    background-position: 5% 5%, 95% 25%, 5% 95%;
-  }
-}
-
-html,
-body {
-  overflow-x: hidden;
-  transition: background-color 0.3s ease;
-}
-
-.no-transition,
-.no-transition * {
-  transition: none !important;
+  -webkit-font-smoothing: antialiased;
 }
 
 * {
@@ -94,8 +62,103 @@ body {
 }
 
 *::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover);
+}
+
+::selection {
+  background-color: var(--scrollbar-thumb-hover);
+  color: #ffffff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--scrollbar-thumb-hover);
+  outline-offset: 2px;
+}
+
+@import "tailwindcss";
+
+@theme {
+  /* Escala Amarelo/Âmbar Quente e Urgente (Padrão Mercado Livre / Amazon) */
+  --color-orange-50: #fffbebfb;
+  --color-orange-100: #fef3c7;
+  --color-orange-200: #fde68a;
+  --color-orange-300: #fcd34d;
+  --color-orange-400: #fbbf24;
+  --color-orange-500: #f59e0b;
+  /* Amarelo/Âmbar de Atenção/Ação */
+  --color-orange-600: #d97706;
+  /* Hover escurecido para destaque */
+  --color-orange-700: #b45309;
+  --color-orange-800: #92400e;
+  --color-orange-900: #78350f;
+  --color-orange-950: #451a03;
+
+  /* Mapeando Amber também para manter compatibilidade no seu tema */
+  --color-amber-500: #f59e0b;
+}
+
+@custom-variant dark (&:where(.my-app-dark, .my-app-dark *));
+
+:root {
+  --bg-base: #fafafa;
+  /* Brilho amarelo sutil de fundo para dar sensação de destaque */
+  --bg-gradient-1: rgba(245, 158, 11, 0.09);
+  --bg-gradient-2: #ffffff;
+  --bg-gradient-3: rgba(251, 191, 36, 0.06);
+  --scrollbar-track: transparent;
+  --scrollbar-thumb: #d4d4d8;
+  --scrollbar-thumb-hover: #f59e0b;
+}
+
+.my-app-dark {
+  --bg-base: #09090b;
+  /* Zinc bem escuro para o amarelo "saltar" na tela */
+  --bg-gradient-1: rgba(245, 158, 11, 0.12);
+  --bg-gradient-2: #09090b;
+  --bg-gradient-3: rgba(251, 191, 36, 0.07);
+  --scrollbar-track: transparent;
+  --scrollbar-thumb: #27272a;
+  --scrollbar-thumb-hover: #f59e0b;
+}
+
+html {
+  background-color: var(--bg-base);
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--bg-base);
+  /* Efeito de iluminação nos cantos para direcionar o olhar aos anúncios/cards */
+  background-image:
+    radial-gradient(circle at 15% 15%, var(--bg-gradient-1) 0%, transparent 35%),
+    radial-gradient(circle at 85% 20%, var(--bg-gradient-3) 0%, transparent 40%),
+    radial-gradient(circle at 50% 80%, var(--bg-gradient-1) 0%, transparent 45%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar com o toque de atenção */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
 *::-webkit-scrollbar-track {
@@ -105,51 +168,30 @@ body {
 *::-webkit-scrollbar-thumb {
   background-color: var(--scrollbar-thumb);
   border-radius: 999px;
-  border: 2px solid var(--bg-base);
-  background-clip: padding-box;
-  transition: background-color 0.25s ease;
 }
 
 *::-webkit-scrollbar-thumb:hover {
   background-color: var(--scrollbar-thumb-hover);
 }
 
-*::-webkit-scrollbar-corner {
-  background: transparent;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-  font-feature-settings: "kern" 1, "liga" 1;
-}
-
-/* Seleção de texto customizada */
+/* Texto selecionado com a cor de destaque da marca */
 ::selection {
-  background-color: var(--scrollbar-thumb-hover);
-  color: #ffffff;
+  background-color: #f59e0b;
+  color: #000000;
+  /* Texto preto para auto contraste sobre amarelo */
 }
 
-/* Foco acessível */
+/* Anéis de Foco de Acessibilidade */
 :focus-visible {
-  outline: 2px solid var(--scrollbar-thumb-hover);
+  outline: 2px solid #f59e0b;
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-/* Placeholder de inputs */
 ::placeholder {
   color: #a1a1aa;
-  /* zinc-400 */
-  opacity: 1;
 }
 
 .my-app-dark ::placeholder {
   color: #52525b;
-  /* zinc-600 */
 }

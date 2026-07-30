@@ -40,7 +40,7 @@ const closeMenu = () => {
         <!-- Logo -->
         <RouterLink :to="{ name: 'home' }" @click="closeMenu" class="flex items-center gap-2 no-underline group">
           <div class="w-9 h-9 bg-orange-500 rounded-full flex items-center justify-center shadow-lg shadow-orange-500/20 transition-transform group-hover:scale-105">
-            <i class="pi pi-shopping-bag text-white text-lg" />
+            <i class="pi pi-bolt text-white text-lg" />
           </div>
           <span class="font-bold text-zinc-950 dark:text-white text-xl tracking-tight">Catálogo<span class="text-orange-500">.</span></span>
         </RouterLink>

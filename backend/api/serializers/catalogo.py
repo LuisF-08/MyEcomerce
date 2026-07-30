@@ -1,27 +1,100 @@
 from rest_framework import serializers
+from django.utils.text import slugify
 from catalogo.models import Categoria, Produto
 
-
 class CategoriaSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Categoria
         fields = "__all__"
-        
+        read_only_fields = ["slug"]
+
+
+    def gerar_slug_unico(
+        self,
+        nome,
+        instance=None
+    ):
+
+        slug_base = slugify(nome)
+
+        if not slug_base:
+            raise serializers.ValidationError({
+                "nome": "Não foi possível gerar um slug válido para este nome."
+            })
+
+        slug = slug_base
+        contador = 1
+
+        queryset = Categoria.objects.all()
+
+        if instance:
+            queryset = queryset.exclude(
+                id=instance.id
+            )
+
+        while queryset.filter(
+            slug=slug
+        ).exists():
+
+            slug = f"{slug_base}-{contador}"
+            contador += 1
+
+        return slug
+
+
+    def create(self, validated_data):
+
+        validated_data["slug"] = self.gerar_slug_unico(
+            validated_data["nome"]
+        )
+
+        return Categoria.objects.create(
+            **validated_data
+        )
+
+
+    def update(
+        self,
+        instance,
+        validated_data
+    ):
+
+        if "nome" in validated_data:
+
+            validated_data["slug"] = (
+                self.gerar_slug_unico(
+                    validated_data["nome"],
+                    instance
+                )
+            )
+
+        return super().update(
+            instance,
+            validated_data
+        )
+
+
     def validate_nome(self, value):
-        if not value.strip():
+
+        value = value.strip()
+
+        if not value:
             raise serializers.ValidationError(
-                "O nome da loja é obrigatório."
+                "O nome da categoria é obrigatório."
             )
 
         return value
-    
+
+
     def validate_ordem(self, value):
+
         if value < 0:
             raise serializers.ValidationError(
-                "Ordem deve ser maior ou igual a 0"
+                "A ordem deve ser maior ou igual a 0."
             )
-        return value
 
+        return value
 
 class ProdutoSerializer(serializers.ModelSerializer):
     categoria_nome = serializers.CharField(

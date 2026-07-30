@@ -133,10 +133,10 @@ const responsiveOptions = ref([
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Estilo da bolinha ATIVA (Agora vai mudar perfeitamente para Verde) */
+/* Estilo da bolinha ATIVA (Amarelo/Âmbar) */
 :deep(.p-galleria-indicator.p-galleria-indicator-active button) {
   width: 28px !important; /* Estica suavemente estilo pílula */
-  background-color: #03f25b !important; /* Cor Primária atualizada */
+  background-color: #f59e0b !important; /* Cor Primária Amarelo/Âmbar */
 }
 
 /* Ajustes finos para o Dark Mode */
@@ -145,6 +145,6 @@ const responsiveOptions = ref([
 }
 
 :global(.my-app-dark) :deep(.p-galleria-indicator.p-galleria-indicator-active button) {
-  background-color: #03f25b !important; /* Cor Primária no dark */
+  background-color: #f59e0b !important; /* Cor Primária no dark */
 }
 </style>

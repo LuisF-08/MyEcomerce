@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue"
 
 // Layout & Componentes
 import Navbar from "@/components/layout/Navbar.vue"
+import HeroBanner from "@/components/layout/HeroBanner.vue"
 import Hero from "@/components/layout/Hero.vue"
 import Banner from "@/components/layout/Banner.vue"
 import CategoriaList from "@/components/catalogo/CategoriaList.vue"
@@ -36,6 +37,7 @@ onMounted(async () => {
 
 <template>
 <div>
+    <HeroBanner />
     <Hero />
     <Banner />
     <CategoriaList />
