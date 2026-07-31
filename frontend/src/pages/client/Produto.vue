@@ -23,19 +23,20 @@ const qty = ref(1)
 // Imagem placeholder padrão em SVG caso o produto não tenha imagem ou a URL falhe
 const PLACEHOLDER_IMG = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 24 24" fill="none" stroke="%23a1a1aa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>'
 
-async function buscarProduto() {
-    if (!produtoStore.produtos.length) {
-        await produtoStore.carregarProdutos()
-    }
+function buscarProduto() {
 
-    // Usa o helper de busca para garantir conversão numérica
-    produto.value = produtoStore.buscarPorId(route.params.id as string) || null
+  produto.value =
+      produtoStore.buscarPorId(route.params.id as string) || null
 
-    imgAtiva.value = 0
-    qty.value = 1
+  imgAtiva.value = 0
+  qty.value = 1
 }
 
-watch(() => route.params.id, buscarProduto, { immediate: true })
+watch(
+  () => route.params.id,
+  buscarProduto,
+  { immediate: true }
+)
 
 // Trata URLs relativas do Django Rest Framework (acrescenta a baseURL se necessário)
 function formatarUrlImagem(url?: string | null): string {

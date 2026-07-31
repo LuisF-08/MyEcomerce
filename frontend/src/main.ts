@@ -3,6 +3,13 @@ import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config'
 import Aura from '@primevue/themes/aura'
 import { definePreset } from '@primevue/themes'
+import ToastService from 'primevue/toastservice'
+import ConfirmationService from 'primevue/confirmationservice'
+import 'primeicons/primeicons.css'
+import './assets/main.css'
+import App from './App.vue'
+import router from './router'
+import { useAuthStore } from '@/stores/auth' // Import necessário para recuperar a sessão
 
 const MyPreset = definePreset(Aura, {
   semantic: {
@@ -21,13 +28,6 @@ const MyPreset = definePreset(Aura, {
     }
   }
 })
-import ToastService from 'primevue/toastservice'
-import ConfirmationService from 'primevue/confirmationservice'
-import 'primeicons/primeicons.css'
-import './assets/main.css'
-import App from './App.vue'
-import router from './router'
-import { useAuthStore } from '@/stores/auth' // Import necessário para recuperar a sessão
 
 // 1. Detecção Automática do Tema
 document.documentElement.classList.add('no-transition')

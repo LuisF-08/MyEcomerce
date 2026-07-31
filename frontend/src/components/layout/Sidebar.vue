@@ -82,7 +82,7 @@ onMounted(() => {
       <div class="flex items-center justify-between px-3 pt-4 pb-3 min-h-[56px]">
         <div class="flex items-center gap-2 overflow-hidden">
           <div class="w-9 h-9 shrink-0 bg-orange-500 rounded-full flex items-center justify-center shadow-lg shadow-orange-500/20">
-            <i class="pi pi-shopping-bag text-white text-lg" />
+            <i class="pi pi-bolt text-white text-lg" />
           </div>
           <span
             v-show="isExpanded"
