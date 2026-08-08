@@ -1,512 +1,78 @@
-# Catálogo Digital Inteligente
-> Um construtor de lojas digitais para pequenos comerciantes.
+# Visão geral
 
----
+## O que é
 
-# 📖 Visão do Produto
+MyEcomerce é um catálogo digital com painel administrativo. Pequenos comerciantes cadastram produtos, personalizam a vitrine e recebem pedidos organizados — normalmente finalizados pelo WhatsApp.
 
-O **Catálogo Digital Inteligente** é uma plataforma que permite que pequenos comerciantes criem sua própria loja virtual em poucos minutos, sem precisar de conhecimentos técnicos.
+## O que não é
 
-Diferente de um e-commerce tradicional, o sistema **não realiza vendas**, **não processa pagamentos** e **não gerencia entregas**.
+Não é um e-commerce completo. O sistema não oferece:
 
-Seu objetivo é organizar a apresentação dos produtos e facilitar a comunicação entre cliente e vendedor através do WhatsApp e, opcionalmente, disponibilizar uma chave PIX para pagamento.
+- Checkout com gateway de pagamento
+- Cálculo ou contratação de frete
+- Emissão de nota fiscal
+- Multi-loja ou multi-vendedor
+- Conta de cliente com login
 
----
+Existe **uma loja** e **um administrador** por instalação.
 
-# 🎯 Objetivo
+## Público-alvo
 
-Permitir que qualquer pessoa possa criar uma vitrine digital personalizada para divulgar seus produtos e receber solicitações de compra organizadas.
+Comerciantes que vendem por WhatsApp, Instagram ou presencialmente e precisam de uma vitrine organizada sem complexidade técnica.
 
-O foco é simplificar o processo de venda para pequenos comerciantes.
+## Problema resolvido
 
----
+Sem vitrine digital, o atendimento repete as mesmas etapas: enviar fotos, informar preços, repetir chave PIX e endereço. O MyEcomerce centraliza produtos, preços e dados da loja; o cliente monta o pedido e o vendedor recebe tudo estruturado.
 
-# 👥 Público-alvo
+## Fluxo do cliente
 
-O sistema foi pensado para pessoas que vendem pelo WhatsApp ou Instagram.
-
-Exemplos:
-
-- Loja de roupas
-- Brechó
-- Confeitaria
-- Papelaria
-- Loja de eletrônicos
-- Artesanato
-- Cosméticos
-- Perfumaria
-- Mercado de bairro
-- Loja de presentes
-
----
-
-# 🚫 O que o sistema NÃO é
-
-O projeto não pretende competir com plataformas como Shopify, Nuvemshop ou WooCommerce.
-
-O sistema **não possui**:
-
-- Checkout
-- Gateway de pagamento
-- Frete
-- Rastreamento
-- Nota fiscal
-- ERP
-- Controle financeiro
-- Marketplace
-- Múltiplos vendedores
-
-Existe apenas **um vendedor**, responsável por toda a administração da loja.
-
----
-
-# 💡 Problema
-
-Hoje pequenos comerciantes normalmente vendem assim:
-
-Instagram
-
-↓
-
-Cliente pergunta preço
-
-↓
-
-Vendedor envia foto
-
-↓
-
-Cliente pergunta outra coisa
-
-↓
-
-Vendedor procura novamente
-
-↓
-
-Cliente pergunta PIX
-
-↓
-
-Vendedor envia chave
-
-↓
-
-Cliente pergunta endereço
-
-↓
-
-Vendedor envia localização
-
-Todo esse processo é repetitivo e pouco organizado.
-
----
-
-# ✅ Solução
-
-O sistema organiza toda essa experiência.
-
-O cliente acessa a loja.
-
-↓
-
-Visualiza os produtos.
-
-↓
-
-Escolhe os itens.
-
-↓
-
-Adiciona ao carrinho.
-
-↓
-
-Informa seus dados.
-
-↓
-
-Envia tudo organizado para o WhatsApp do vendedor.
-
----
-
-# 🛍 Fluxo do Cliente
-
-```text
-Entrar na loja
-
-↓
-
-Visualizar produtos
-
-↓
-
-Pesquisar
-
-↓
-
-Filtrar categorias
-
-↓
-
-Adicionar produtos ao carrinho
-
-↓
-
-Escolher quantidade
-
-↓
-
-Informar nome
-
-↓
-
-Informar telefone (opcional)
-
-↓
-
-Informar endereço ou localização
-
-↓
-
-Adicionar observações
-
-↓
-
-Enviar para WhatsApp
-
-↓
-
-Negociação diretamente com o vendedor
+```
+Acessa a loja
+    → Navega produtos / categorias
+    → Adiciona itens ao carrinho
+    → Informa nome, telefone, endereço e observações
+    → Envia mensagem pelo WhatsApp
+    → Negocia e paga diretamente com o vendedor
 ```
 
----
+O carrinho existe apenas no navegador (`localStorage`). Não representa uma compra confirmada.
 
-# 🛠 Fluxo do Vendedor
+## Fluxo do administrador
 
-```text
-Instalar sistema
-
-↓
-
-Configurar loja
-
-↓
-
-Cadastrar categorias
-
-↓
-
-Cadastrar produtos
-
-↓
-
-Adicionar imagens
-
-↓
-
-Personalizar aparência
-
-↓
-
-Compartilhar link
-
-↓
-
-Receber solicitações pelo WhatsApp
+```
+Faz login no painel
+    → Configura identidade da loja (logo, banners, cores, contatos)
+    → Cadastra categorias e produtos
+    → Compartilha o link da loja
+    → Recebe solicitações (WhatsApp e/ou API)
+    → Atualiza status dos pedidos no painel
+    → Acompanha métricas no dashboard
 ```
 
----
+## Integração com WhatsApp
 
-# 🎨 Personalização da Loja
+Ao finalizar o carrinho, o frontend monta uma mensagem com itens, quantidades, total e dados do cliente, e abre o WhatsApp com o texto pré-preenchido. O número de destino vem das configurações da loja (`whatsapp`).
 
-Cada vendedor poderá personalizar sua loja.
+O sistema pode também persistir solicitações na API para histórico e dashboard.
 
-Exemplos:
+## PIX
 
-- Nome
-- Logo
-- Banner
-- Cor principal
-- Cor secundária
-- Fonte
-- Ícone
-- WhatsApp
-- PIX
-- Instagram
-- Facebook
-- Endereço
-- Horário de funcionamento
+A loja pode cadastrar uma chave PIX. O cliente visualiza ou copia a chave na vitrine. O sistema **não confirma** se o pagamento foi realizado.
 
-O objetivo é que cada loja tenha sua própria identidade visual.
+## MVP implementado
 
----
+| Módulo | Status |
+|--------|--------|
+| Configuração da loja | Implementado |
+| CRUD de categorias | Implementado |
+| CRUD de produtos (imagens, variações, estoque) | Implementado |
+| Vitrine pública | Implementado |
+| Carrinho com WhatsApp | Implementado |
+| Solicitações na API | Implementado |
+| Dashboard e exportação CSV | Implementado |
+| Cache Redis | Implementado |
+| Docker (Redis) | Implementado |
 
-# 📦 Produtos
+## Fora do escopo atual
 
-Cada produto poderá possuir:
-
-- Nome
-- Descrição
-- Preço
-- Categoria
-- Várias imagens
-- Produto em destaque
-- Disponível ou indisponível
-
----
-
-# 🗂 Categorias
-
-Exemplos:
-
-- Roupas
-- Eletrônicos
-- Informática
-- Alimentos
-- Cosméticos
-- Artesanato
-
----
-
-# 🛒 Carrinho
-
-O carrinho **não representa uma compra**.
-
-Ele apenas organiza os produtos escolhidos pelo cliente.
-
-Sua função é gerar uma solicitação organizada para o vendedor.
-
----
-
-# 📲 Integração com WhatsApp
-
-Ao finalizar o carrinho o sistema gera automaticamente uma mensagem.
-
-Exemplo:
-
-```text
-Olá!
-
-Gostaria de solicitar os seguintes produtos:
-
-• Notebook Dell
-Quantidade: 1
-
-• Mouse Logitech
-Quantidade: 2
-
-Total estimado:
-R$ 4.860,00
-
-Nome:
-Luís
-
-Telefone:
-(77) XXXXX-XXXX
-
-Endereço:
-Rua ...
-
-Observações:
-Gostaria de retirar amanhã.
-```
-
-Ao confirmar, o WhatsApp é aberto automaticamente com essa mensagem.
-
----
-
-# 💳 PIX
-
-Opcionalmente o vendedor poderá informar uma chave PIX.
-
-O cliente poderá:
-
-- copiar a chave;
-- visualizar um QR Code (futuramente);
-- realizar o pagamento diretamente ao vendedor.
-
-O sistema **não confirma pagamentos**.
-
----
-
-# 🏠 Estrutura Geral
-
-```text
-Loja
-
-├── Home
-├── Produtos
-├── Categorias
-├── Carrinho
-├── Contato
-└── Sobre
-```
-
----
-
-# ⚙ Painel Administrativo
-
-O sistema possui apenas um administrador.
-
-Não existe cadastro de vendedores.
-
-O painel contém:
-
-```text
-Dashboard
-
-Produtos
-
-Categorias
-
-Solicitações
-
-Aparência
-
-Configurações
-```
-
----
-
-# 📊 Dashboard
-
-Indicadores simples.
-
-- Produtos cadastrados
-- Solicitações recebidas
-- Produtos mais visualizados (futuro)
-- Produtos em destaque
-
----
-
-# 🎨 Aparência
-
-O vendedor poderá alterar:
-
-- Logo
-- Banner
-- Cores
-- Tema
-- Ícones
-- Rodapé
-- Redes sociais
-
----
-
-# 🗃 Banco de Dados
-
-Para manter o sistema simples, será utilizado inicialmente:
-
-- SQLite
-
-Motivos:
-
-- Zero configuração
-- Fácil backup
-- Banco único em arquivo
-- Ideal para pequenos negócios
-- Não exige instalação de servidor
-
-Caso o projeto evolua, poderá ser migrado para PostgreSQL.
-
----
-
-# 🚀 MVP
-
-O MVP será composto por:
-
-## Loja
-
-- Nome
-- Logo
-- Banner
-- Redes sociais
-- WhatsApp
-- PIX
-
-## Produtos
-
-- CRUD
-- Imagens
-- Categorias
-
-## Cliente
-
-- Visualização dos produtos
-- Pesquisa
-- Carrinho
-
-## Solicitação
-
-- Nome
-- Telefone
-- Endereço
-- Observações
-- Geração automática da mensagem
-
-## Administração
-
-- Login
-- Dashboard
-- Produtos
-- Categorias
-- Aparência
-- Configurações
-
----
-
-# ❌ Funcionalidades Futuras
-
-- Favoritos
-- Cupons
-- Avaliações
-- Chat interno
-- Controle de estoque
-- Dashboard avançado
-- QR Code PIX automático
-- Temas prontos
-- Exportação de catálogo
-- Integração Instagram
-- Analytics
-- PWA
-- Multi-lojas
-- Multiusuários
-
----
-
-# 🏛 Arquitetura
-
-Frontend
-
-- Vue.js
-- Tailwind CSS
-- PrimeVue
-
-Backend
-
-- Django REST Framework
-
-Banco
-
-- SQLite
-
-Comunicação
-
-- REST API
-
----
-
-# 🎯 Filosofia do Projeto
-
-> "O sistema não vende.
->
-> O sistema organiza a venda."
-
-Nosso objetivo é permitir que qualquer pequeno comerciante tenha uma loja digital bonita, simples e funcional em poucos minutos, sem precisar entender de tecnologia.
-
-O cliente escolhe os produtos.
-
-O sistema organiza a solicitação.
-
-O vendedor fecha a venda da maneira que preferir.
+Upload para S3, PostgreSQL em produção, recuperação de senha, multi-tenancy, PWA, cupons, avaliações e pagamentos online.

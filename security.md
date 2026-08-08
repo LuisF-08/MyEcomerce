@@ -1,74 +1,74 @@
-# Security Policy
+# Política de segurança
 
-## Visão Geral
+## Escopo
 
-O MyEcomerce utiliza boas práticas de segurança para proteger os dados da aplicação e restringir operações administrativas.
+Este documento descreve as medidas de segurança do MyEcomerce e como reportar vulnerabilidades.
 
----
+## Autenticação
 
-# Autenticação
+A API usa JSON Web Token (JWT) via `djangorestframework-simplejwt`.
 
-A autenticação da API utiliza:
+| Endpoint | Função |
+|----------|--------|
+| `POST /api/token/` | Obter access + refresh token |
+| `POST /api/token/refresh/` | Renovar access token |
 
-- JSON Web Token (JWT)
+Configuração atual:
 
-Endpoints:
+- Access token: 30 minutos
+- Refresh token: 7 dias, com rotação e blacklist após rotação
+- Header: `Authorization: Bearer <token>`
 
-```
-POST /api/token/
-POST /api/token/refresh/
-```
+O frontend armazena tokens em `localStorage`. Em produção com HTTPS, considere avaliar alternativas (httpOnly cookies) conforme o perfil de risco.
 
----
+## Autorização
 
-# Permissões
+Permissão padrão da API: autenticado (`IsAuthenticated`). ViewSets aplicam exceções:
 
-### Público
+| Classe | Comportamento |
+|--------|---------------|
+| `AdminOuLeitura` | `list` e `retrieve` públicos; demais ações exigem `is_staff` |
+| `AdminOuCria` | `create` público (solicitações); demais ações exigem admin |
 
-- Visualizar produtos
-- Visualizar categorias
-- Enviar solicitações
+Dashboard, exportação CSV e endpoints de escrita de produtos/categorias/loja exigem usuário staff.
 
-### Administrador
+## Validação de dados
 
-- Gerenciar produtos
-- Gerenciar categorias
-- Gerenciar loja
-- Dashboard
-- Relatórios
+- Serializers DRF validam campos obrigatórios, tipos e regras (ex.: quantidade mínima em itens de solicitação).
+- Upload de imagens processado via Pillow.
+- Senhas validadas pelos validators padrão do Django.
 
----
+## Configuração sensível
 
-# Validações
+Variáveis lidas de `.env` via `python-decouple`:
 
-A API valida automaticamente:
+| Variável | Uso |
+|----------|-----|
+| `SECRET_KEY` | Assinatura de tokens e sessões Django |
+| `DEBUG` | Modo debug (deve ser `False` em produção) |
+| `ALLOWED_HOSTS` | Hosts permitidos |
 
-- Campos obrigatórios
-- Valores inválidos
-- Estoque
-- Preços
-- Dados inconsistentes
+**Nunca** commite `.env` ou chaves reais no repositório.
 
----
+## CORS
 
-# Proteção
+Em desenvolvimento, apenas `http://localhost:5173` está autorizado. Restrinja origens em produção.
 
-- JWT
-- Serializer Validation
-- Permissions
-- Django Admin protegido
+## Boas práticas
 
----
+1. Use HTTPS em produção.
+2. Mantenha `DEBUG=False` em produção.
+3. Atualize dependências regularmente.
+4. Crie superusuários com senhas fortes.
+5. Faça backup de `db.sqlite3` e `media/`.
+6. Não exponha `/api/docs/` publicamente em produção sem autenticação adicional, se desejado.
 
-# Boas práticas
+## Reportar vulnerabilidades
 
-- Nunca compartilhar a SECRET_KEY
-- Utilizar HTTPS em produção
-- Armazenar credenciais em variáveis de ambiente
-- Atualizar dependências regularmente
+Se encontrar uma vulnerabilidade de segurança, abra uma issue privada ou entre em contato pelo repositório do projeto. Descreva:
 
----
+- Passos para reproduzir
+- Impacto estimado
+- Versão/commit afetado
 
-# Reportar vulnerabilidades
-
-Caso encontre alguma vulnerabilidade, entre em contato através do repositório do projeto.
+Não divulgue publicamente antes de correção, quando possível.

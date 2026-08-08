@@ -14,7 +14,7 @@ onMounted(async () => {
     await Promise.all([
         lojaStore.carregarLoja(),
         produtoStore.carregarProdutos(),
-        categoriaStore.fetch()
+        categoriaStore.carregarCategorias()
     ])
 
 })

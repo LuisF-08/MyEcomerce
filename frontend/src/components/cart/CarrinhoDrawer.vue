@@ -5,6 +5,7 @@ import Drawer from 'primevue/drawer'
 import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
 import Textarea from 'primevue/textarea'
+import ImagemComFallback from '../ui/ImagemComFallback.vue'
 
 const carrinho = useCarrinhoStore()
 
@@ -52,12 +53,12 @@ function enviarWhatsApp() {
           :key="item.produtoId"
           class="border border-zinc-200 rounded-2xl p-3 flex items-center gap-3"
         >
-          <img
-            v-if="item.imagem"
-            :src="item.imagem"
-            :alt="item.nome"
-            class="w-14 h-14 object-cover rounded-xl shrink-0"
-          >
+        <ImagemComFallback
+        :src="item.imagem"
+        :alt="item.nome"
+        aspect=""
+        class="w-14 h-14 rounded-xl shrink-0"
+        />
           <div class="flex-1 min-w-0">
             <p class="text-sm font-semibold text-zinc-800 truncate">{{ item.nome }}</p>
             <p class="text-xs text-zinc-500">{{ preco(item.preco) }} cada</p>

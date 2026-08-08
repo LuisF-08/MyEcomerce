@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref } from "vue"
 import { useRouter } from "vue-router"
 import { useToast } from "primevue/usetoast"
 import { useCarrinhoStore } from "@/stores/carrinho"
 import type { Produto } from "@/types/produto"
+import ImagemComFallback from "@/components/ui/ImagemComFallback.vue"
 
 const props = defineProps<{
     produto: Produto
@@ -12,8 +12,6 @@ const props = defineProps<{
 const router = useRouter()
 const carrinho = useCarrinhoStore()
 const toast = useToast()
-
-const imagemErro = ref(false)
 
 function formatarPreco(valor: number) {
     return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
@@ -50,24 +48,13 @@ function adicionarAoCarrinho() {
     class="group rounded-2xl sm:rounded-3xl overflow-hidden bg-white/90 dark:bg-white/10 backdrop-blur-xl backdrop-saturate-150 border border-zinc-200 dark:border-white/15 shadow-lg shadow-zinc-200/40 dark:shadow-black/40 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col cursor-pointer"
     @click="abrirProduto"
 >
-    <div class="relative w-full aspect-[4/5] bg-zinc-100 dark:bg-white/5 overflow-hidden">
-        <img
-            v-if="!imagemErro && produto.imagem_1"
+    <div class="relative overflow-hidden">
+        <ImagemComFallback
             :src="produto.imagem_1"
             :alt="produto.nome"
-            loading="lazy"
-            class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-            @error="imagemErro = true"
-        >
-        <div
-            v-else
-            class="w-full h-full flex items-center justify-center bg-zinc-100 dark:bg-white/5 text-zinc-400 dark:text-zinc-500"
-        >
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 sm:w-12 sm:h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3 8.25v7.5A2.25 2.25 0 005.25 18h13.5A2.25 2.25 0 0021 15.75v-7.5A2.25 2.25 0 0018.75 6H5.25A2.25 2.25 0 003 8.25z" />
-            </svg>
-        </div>
-
+            aspect="aspect-[4/5]"
+            class="group-hover:scale-105 transition-transform duration-500"
+        />
         <div class="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-white/5"></div>
     </div>
 

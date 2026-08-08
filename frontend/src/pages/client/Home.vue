@@ -30,7 +30,7 @@ const { destaques: produtos, carregando: carregandoProdutos } = storeToRefs(prod
 
 onMounted(async () => {
     categorias.value = await todasCategorias()
-    await produtoStore.carregarDestaques()
+    produtoStore.carregarProdutos()
     await lojaStore.carregarLoja()
 })
 </script>

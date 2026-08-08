@@ -3,8 +3,10 @@ import { RouterLink } from 'vue-router'
 import { storeToRefs } from "pinia"
 
 import { useLojaStore } from "@/stores/loja"
+import { useCarrinhoStore } from "@/stores/carrinho"
 
 const lojaStore = useLojaStore()
+const carrinho = useCarrinhoStore()
 
 const { loja } = storeToRefs(lojaStore)
 </script>
@@ -27,7 +29,14 @@ const { loja } = storeToRefs(lojaStore)
           <li><RouterLink to="/" class="hover:text-white transition-colors no-underline text-zinc-400">Início</RouterLink></li>
           <li><RouterLink to="/categoria/todos" class="hover:text-white transition-colors no-underline text-zinc-400">Produtos</RouterLink></li>
           <li><RouterLink to="/sobre" class="hover:text-white transition-colors no-underline text-zinc-400">Sobre nós</RouterLink></li>
-          <li><RouterLink to="/carrinho" class="hover:text-white transition-colors no-underline text-zinc-400">Carrinho</RouterLink></li>
+          <li>
+            <button
+              @click="carrinho.toggle()"
+              class="hover:text-white transition-colors text-zinc-400 text-left"
+            >
+              Carrinho
+            </button>
+          </li>
         </ul>
       </div>
       <div>

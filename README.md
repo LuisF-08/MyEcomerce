@@ -1,176 +1,84 @@
-# 🛒 *MyEcomerce*
+# MyEcomerce
 
-Sistema de catálogo online desenvolvido para pequenos empreendedores que desejam divulgar seus produtos sem a complexidade de um e-commerce tradicional.
+Plataforma de catálogo digital para pequenos comerciantes. O cliente navega pelos produtos, monta um carrinho e envia a solicitação pelo WhatsApp. O lojista gerencia produtos, categorias, pedidos e aparência da loja em um painel administrativo.
 
-O projeto possui um painel administrativo próprio, API REST em Django REST Framework e frontend em Vue.js.
+O sistema **não processa pagamentos**, **não calcula frete** e **não exige cadastro do cliente**.
 
----
+## Stack
 
-# Objetivo
+| Camada    | Tecnologias |
+|-----------|-------------|
+| Backend   | Python, Django 6, Django REST Framework, JWT, SQLite, Redis (cache) |
+| Frontend  | Vue 3, TypeScript, Vite, Pinia, Tailwind CSS, PrimeVue, Chart.js |
+| API       | REST, Swagger (`/api/docs/`) |
 
-Permitir que pequenas lojas publiquem produtos, recebam pedidos pelo site e gerenciem todas as informações através de um dashboard administrativo.
-
----
-
-# Tecnologias
-
-## Backend
-
-- Python
-- Redis
-- Django
-- Django REST Framework
-- JWT Authentication
-- SQLite (MVP)
-- Swagger (drf-spectacular)
-
-## Frontend
-
-- Vue.js
-- Vite
-- TailwindCSS
-- PrimeVue
-- Axios
-
----
-
-# Funcionalidades
-
-## Loja
-
-- Cadastro das informações da loja
-- Logo
-- Até 4 banners
-- Redes sociais
-- PIX
-- Horário de funcionamento
-- Dias de funcionamento
-- Personalização de cores
-
----
-
-## Catálogo
-
-- Cadastro de categorias
-- Cadastro de produtos
-- Controle de estoque
-- Produtos em destaque
-- Imagens
-- Variações
-
----
-
-## Solicitações
-
-- Recebimento de pedidos
-- Dados do cliente
-- Endereço
-- Produtos
-- Total automático
-- Controle de status
-
----
-
-## Dashboard
-
-- Total de produtos
-- Produtos ativos
-- Total de categorias
-- Pedidos
-- Faturamento
-- Pedidos por mês
-- Produtos mais vendidos
-- Últimos pedidos
-- Estatísticas financeiras
-- Exportação CSV
-
----
-
-## API
-
-- REST API
-- CRUD completo
-- JWT Authentication
-- Swagger
-- Filtros
-- Pesquisa
-- Ordenação
-
----
-
-# Estrutura
+## Estrutura do repositório
 
 ```
-backend/
-
-api/
-catalogo/
-loja/
-solicitacao/
-services/
-
-frontend/
-
-views/
-components/
-pages/
+MyEcomerce/
+├── backend/          # API Django
+│   ├── api/          # Views, serializers, permissions, services
+│   ├── catalogo/     # Categorias e produtos
+│   ├── loja/         # Configurações da loja
+│   ├── solicitacao/  # Pedidos e itens
+│   └── backend/      # Settings, URLs, WSGI
+├── frontend/         # SPA Vue
+├── docker/           # docker-compose (Redis)
+└── docs/             # Documentação do projeto
 ```
 
----
+## Início rápido
 
-# Fluxo
+Consulte [docs/instalacao.md](docs/instalacao.md) para configurar backend, frontend e Redis.
 
-Cliente
+```bash
+# Backend
+cd backend
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+cp ../.env.example ../.env   # configure SECRET_KEY e demais variáveis
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
 
-↓
+# Frontend (outro terminal)
+cd frontend
+npm install
+npm run dev
+```
 
-Visualiza produtos
+- Loja pública: `http://localhost:5173`
+- Painel admin: `http://localhost:5173/login`
+- API Swagger: `http://localhost:8000/api/docs/`
 
-↓
+## Documentação
 
-Seleciona produtos
+| Documento | Conteúdo |
+|-----------|----------|
+| [docs/visao-geral.md](docs/visao-geral.md) | Objetivo, escopo e fluxos |
+| [docs/arquitetura.md](docs/arquitetura.md) | Estrutura técnica e decisões |
+| [docs/entidades.md](docs/entidades.md) | Modelo de dados |
+| [docs/regras-negocio.md](docs/regras-negocio.md) | Regras e casos de uso |
+| [docs/telas.md](docs/telas.md) | Telas do site e do painel |
+| [docs/api.md](docs/api.md) | Endpoints e autenticação |
+| [docs/instalacao.md](docs/instalacao.md) | Instalação e execução |
+| [security.md](security.md) | Política de segurança |
 
-↓
+## Funcionalidades
 
-Envia solicitação
+**Loja pública**
+- Vitrine com banners, categorias e produtos em destaque
+- Catálogo com busca, filtros e ordenação
+- Carrinho persistido no `localStorage`
+- Envio da solicitação via WhatsApp
 
-↓
+**Painel administrativo**
+- Login com JWT
+- Dashboard com faturamento, pedidos e gráficos
+- CRUD de produtos, categorias e configurações da loja
+- Gestão de solicitações com controle de status
+- Exportação de relatório CSV
 
-Administrador recebe
+## Autor
 
-↓
-
-Gerencia pelo Dashboard
-
----
-
-# Segurança
-
-- JWT Authentication
-- Permissões por endpoint
-- Validações nos serializers
-- Administração protegida
-- API documentada
-
----
-
-# Futuras melhorias
-
-- Upload para S3
-- Cache com Redis
-- Docker
-- PostgreSQL
-- Celery
-- Painel de relatórios
-- Analytics
-- Cupons
-- Avaliações
-- Pagamentos online
-
----
-
-# Autor
-
-**Luís Filipe Moreira Novais**
-
-Bacharelado em Sistemas de Informação — IFBA
+Luís Filipe Moreira Novais — Bacharelado em Sistemas de Informação, IFBA

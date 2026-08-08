@@ -26,7 +26,7 @@ const opcoesOrdenacao = [
 
 onMounted(async () => {
     if (!produtoStore.produtos.length) await produtoStore.carregarProdutos()
-    if (!categoriaStore.categorias.length) await categoriaStore.fetch()
+    if (!categoriaStore.categorias.length) await categoriaStore.carregarCategorias()
 })
 
 watch(() => route.query.q, valor => busca.value = (valor as string) || '')
