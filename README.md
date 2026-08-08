@@ -17,6 +17,7 @@ Permitir que pequenas lojas publiquem produtos, recebam pedidos pelo site e gere
 ## Backend
 
 - Python
+- Redis
 - Django
 - Django REST Framework
 - JWT Authentication

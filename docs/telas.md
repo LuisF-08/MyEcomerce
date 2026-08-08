@@ -117,6 +117,8 @@ Acesso restrito ao lojista. Autenticação mandatória via JWT (`Access` e `Refr
 *   **🔮 Melhorias Futuras (Frontend & Backend):**
     *   **Ordenação por Arrastar (Drag & Drop):** Permitir que o lojista altere a ordem em que as categorias aparecem no site público arrastando as caixas na interface.
 
+
+#### Futura melhoria
 ### 🏪 Tela 6 — Loja (Configurações do Micro SaaS)
 *   **Objetivo:** Modificar as informações e a aparência da vitrine do cliente.
 *   **Componentes:** Abas separadas por assunto: Informações Básicas, Contato, Redes Sociais, Dados de Pagamento (Chave Pix), Design do Tema (Cores e Banners de Carrossel).
