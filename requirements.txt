@@ -17,6 +17,17 @@ defer==1.0.6
 deprecation==2.0.7
 dill==0.3.8
 distro==1.9.0
+Django>=5.0,<6.1
+djangorestframework
+djangorestframework-simplejwt
+drf-spectacular
+django-cors-headers
+django-filter
+python-decouple
+python-dotenv
+dj-database-url
+whitenoise
+psycopg2-binary
 eyed3==0.9.7
 filelock==3.13.1
 filetype==1.2.0
