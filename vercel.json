@@ -2,7 +2,7 @@
     "version": 2,
     "builds": [
       {
-        "src": "backend/build.py",
+        "src": "backend/backend/wsgi.py",
         "use": "@vercel/python"
       },
       {
@@ -15,12 +15,12 @@
     ],
     "routes": [
       {
-        "src": "/static/(.*)",
-        "dest": "backend/build.py"
+        "src": "/(admin|api|schema|media)(.*)",
+        "dest": "backend/backend/wsgi.py"
       },
       {
-        "src": "/(admin|api|schema|media)(.*)",
-        "dest": "backend/build.py"
+        "src": "/static/(.*)",
+        "dest": "backend/backend/wsgi.py"
       },
       {
         "handle": "filesystem"
