@@ -2,7 +2,7 @@
     "version": 2,
     "builds": [
       {
-        "src": "backend/build_files.sh",
+        "src": "backend/build.py",
         "use": "@vercel/python"
       },
       {
@@ -16,11 +16,11 @@
     "routes": [
       {
         "src": "/static/(.*)",
-        "dest": "/static/$1"
+        "dest": "backend/build.py"
       },
       {
         "src": "/(admin|api|schema|media)(.*)",
-        "dest": "backend/build_files.sh"
+        "dest": "backend/build.py"
       },
       {
         "handle": "filesystem"
