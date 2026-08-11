@@ -2,7 +2,7 @@
     "version": 2,
     "builds": [
       {
-        "src": "backend/backend/wsgi.py",
+        "src": "backend/build_files.sh",
         "use": "@vercel/python"
       },
       {
@@ -13,18 +13,21 @@
         }
       }
     ],
-    "rewrites": [
+    "routes": [
       {
-        "source": "/(admin|api|schema|media)(.*)",
-        "destination": "backend/backend/wsgi.py"
+        "src": "/static/(.*)",
+        "dest": "/static/$1"
       },
       {
-        "source": "/static/(.*)",
-        "destination": "backend/backend/wsgi.py"
+        "src": "/(admin|api|schema|media)(.*)",
+        "dest": "backend/build_files.sh"
       },
       {
-        "source": "/(.*)",
-        "destination": "/index.html"
+        "handle": "filesystem"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/index.html"
       }
     ]
   }

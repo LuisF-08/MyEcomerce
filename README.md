@@ -8,9 +8,10 @@ O sistema **não processa pagamentos**, **não calcula frete** e **não exige ca
 
 | Camada    | Tecnologias |
 |-----------|-------------|
-| Backend   | Python, Django 6, Django REST Framework, JWT, SQLite, Redis (cache) |
+| Backend   | Python, Django 6, Django REST Framework, JWT, SQLite/PostgreSQL(Neon), Redis (cache) |
 | Frontend  | Vue 3, TypeScript, Vite, Pinia, Tailwind CSS, PrimeVue, Chart.js |
 | API       | REST, Swagger (`/api/docs/`) |
+| Deploy    | Vercel       |
 
 ## Estrutura do repositório
 
