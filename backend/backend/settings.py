@@ -12,8 +12,8 @@ from datetime import timedelta
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv()
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # -------------------------------------------------------------------
 # Segurança & Hosts
@@ -24,8 +24,8 @@ DEBUG = config("DEBUG", default=False, cast=bool)
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    '.vercel.app',  # O ponto no início aceita QUALQUER subdomínio gerado pela Vercel
-    'my-ecomerce-bqtbe1og8-luisf-9.vercel.app',
+    '.vercel.app', 
+    '*'            
 ]
 
 CORS_ALLOWED_ORIGINS = config(
@@ -33,12 +33,22 @@ CORS_ALLOWED_ORIGINS = config(
     default="http://localhost:5173,http://127.0.0.1:5173",
     cast=Csv()
 )
-CORS_ALLOW_ALL_ORIGINS = DEBUG  
+# --- CORS CONFIGURATION ---
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
 # -------------------------------------------------------------------
 # Banco de Dados
 # -------------------------------------------------------------------
 DATABASE_URL = config("DATABASE_URL", default=None)
+
+DATABASES = {
+    'default': dj_database_url.config(
+        default=os.getenv('DATABASE_URL'),
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
+}
 
 if DATABASE_URL:
     DATABASES = {
@@ -74,8 +84,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', 
-    'corsheaders.middleware.CorsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  
+    'corsheaders.middleware.CorsMiddleware',        
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -177,4 +187,3 @@ else:
     }
     
     
-CORS_ALLOW_ALL_ORIGINS = True
