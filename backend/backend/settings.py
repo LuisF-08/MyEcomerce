@@ -21,11 +21,12 @@ MEDIA_ROOT = BASE_DIR / "media"
 SECRET_KEY = config("SECRET_KEY", default="django-insecure-key-temp")
 DEBUG = config("DEBUG", default=False, cast=bool)
 
-ALLOWED_HOSTS = config(
-    "ALLOWED_HOSTS", 
-    default="localhost,127.0.0.1,.vercel.app", 
-    cast=Csv()
-)
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '.vercel.app',  # O ponto no início aceita QUALQUER subdomínio gerado pela Vercel
+    'my-ecomerce-bqtbe1og8-luisf-9.vercel.app',
+]
 
 CORS_ALLOWED_ORIGINS = config(
     "CORS_ALLOWED_ORIGINS",
@@ -174,3 +175,6 @@ else:
             "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
         }
     }
+    
+    
+CORS_ALLOW_ALL_ORIGINS = True
