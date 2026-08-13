@@ -1,33 +1,33 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "backend/backend/wsgi.py",
-        "use": "@vercel/python"
-      },
-      {
-        "src": "frontend/package.json",
-        "use": "@vercel/static-build",
-        "config": {
-          "distDir": "dist"
-        }
+  "version": 2,
+  "builds": [
+    {
+      "src": "backend/backend/wsgi.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
       }
-    ],
-    "routes": [
-      {
-        "src": "/(admin|api|schema|media)(.*)",
-        "dest": "backend/backend/wsgi.py"
-      },
-      {
-        "src": "/static/(.*)",
-        "dest": "backend/backend/wsgi.py"
-      },
-      {
-        "handle": "filesystem"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "/index.html"
-      }
-    ]
-  }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(admin|api|schema|media)(.*)",
+      "dest": "backend/backend/wsgi.py"
+    },
+    {
+      "src": "/static/(.*)",
+      "dest": "backend/backend/wsgi.py"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
