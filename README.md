@@ -69,6 +69,8 @@ npm run dev
 
 ## Funcionalidades
 
+![Dashboard](images/dashboard_ecomerce.png)
+
 **Loja pública**
 - Vitrine com banners, categorias e produtos em destaque
 - Catálogo com busca, filtros e ordenação
