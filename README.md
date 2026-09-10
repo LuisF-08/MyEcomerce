@@ -1,5 +1,7 @@
 # MyEcomerce
 
+![aplicação](images/inicio_ecomerce.png)
+
 Plataforma de catálogo digital para pequenos comerciantes. O cliente navega pelos produtos, monta um carrinho e envia a solicitação pelo WhatsApp. O lojista gerencia produtos, categorias, pedidos e aparência da loja em um painel administrativo.
 
 O sistema **não processa pagamentos**, **não calcula frete** e **não exige cadastro do cliente**.
