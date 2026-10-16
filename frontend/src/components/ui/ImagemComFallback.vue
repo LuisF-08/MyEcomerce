@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, watch, computed } from "vue"
 
+import { resolveMediaUrl } from "@/config/api"
+
 const props = withDefaults(defineProps<{
     src?: string | null
     alt?: string
@@ -15,6 +17,8 @@ const props = withDefaults(defineProps<{
 
 const erro = ref(false)
 watch(() => props.src, () => { erro.value = false })
+
+const srcResolvida = computed(() => resolveMediaUrl(props.src) || null)
 
 // Paleta alinhada à marca: variações de laranja + zinc neutro
 const paleta = [
@@ -45,8 +49,8 @@ const iniciais = computed(() => {
 <template>
 <div :class="[aspect, 'w-full overflow-hidden relative']">
     <img
-        v-if="!erro && src"
-        :src="src"
+        v-if="!erro && srcResolvida"
+        :src="srcResolvida"
         :alt="alt"
         loading="lazy"
         class="w-full h-full object-cover object-center"

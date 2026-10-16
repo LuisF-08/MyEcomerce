@@ -15,8 +15,11 @@ const telefone = ref('')
 const endereco = ref('')
 const obs = ref('')
 
+// Estado do botão do Mercado Pago
+const carregandoMp = ref(false)
+
 const preco = (v: number) =>
-    v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+  v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
 function enviarWhatsApp() {
   const itensTexto = carrinho.itens
@@ -31,6 +34,15 @@ function enviarWhatsApp() {
   showModal.value = false
   carrinho.fechar()
 }
+
+async function pagarMercadoPago() {
+  carregandoMp.value = true
+  try {
+    // TODO: sua lógica do Mercado Pago entra aqui
+  } finally {
+    carregandoMp.value = false
+  }
+}
 </script>
 
 <template>
@@ -38,52 +50,71 @@ function enviarWhatsApp() {
     v-model:visible="carrinho.aberto"
     header="Seu carrinho"
     position="right"
-    class="!w-full sm:!w-96"
+    class="drawer-carrinho"
+    :pt="{ content: { class: 'flex flex-col min-h-0' } }"
   >
-    <div v-if="!carrinho.itens.length" class="flex flex-col items-center justify-center h-full text-center gap-3 text-zinc-400">
+    <!-- Vazio -->
+    <div
+      v-if="!carrinho.itens.length"
+      class="flex-1 flex flex-col items-center justify-center text-center gap-3 text-zinc-400"
+    >
       <i class="pi pi-shopping-cart text-4xl" />
       <p class="text-sm">Seu carrinho está vazio</p>
     </div>
 
-    <div v-else class="flex flex-col h-full">
-      <!-- Lista -->
-      <div class="flex-1 overflow-y-auto space-y-3 pr-1">
+    <div v-else class="flex-1 min-h-0 flex flex-col">
+      <!-- Lista (rola sozinha, o resumo fica sempre visível embaixo) -->
+      <div class="lista-itens flex-1 min-h-0 overflow-y-auto space-y-4">
         <div
           v-for="item in carrinho.itens"
           :key="item.produtoId"
-          class="border border-zinc-200 rounded-2xl p-3 flex items-center gap-3"
+          class="border border-zinc-200 rounded-2xl p-4 flex flex-col gap-4"
         >
-        <ImagemComFallback
-        :src="item.imagem"
-        :alt="item.nome"
-        aspect=""
-        class="w-14 h-14 rounded-xl shrink-0"
-        />
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-semibold text-zinc-800 truncate">{{ item.nome }}</p>
-            <p class="text-xs text-zinc-500">{{ preco(item.preco) }} cada</p>
-
-            <div class="flex items-center gap-2 mt-1">
-              <button
-                class="w-6 h-6 flex items-center justify-center rounded-full border border-zinc-200 text-zinc-600 hover:bg-zinc-100"
-                @click="carrinho.diminuir(item.produtoId)"
-              >−</button>
-              <span class="text-sm font-semibold min-w-4 text-center">{{ item.quantidade }}</span>
-              <button
-                class="w-6 h-6 flex items-center justify-center rounded-full border border-zinc-200 text-zinc-600 hover:bg-zinc-100"
-                @click="carrinho.incrementar(item.produtoId)"
-              >+</button>
+          <!-- Produto: sempre em cima no mobile -->
+          <div class="flex items-center gap-4 min-w-0">
+            <ImagemComFallback
+              :src="item.imagem"
+              :alt="item.nome"
+              aspect=""
+              class="w-16 h-16 rounded-xl shrink-0"
+            />
+            <div class="min-w-0">
+              <p class="text-sm font-semibold text-zinc-800 break-words">{{ item.nome }}</p>
+              <p class="text-xs text-zinc-500">{{ preco(item.preco) }} cada</p>
             </div>
           </div>
 
-          <div class="flex flex-col items-end gap-2">
-            <span class="text-sm font-bold text-zinc-900">{{ preco(item.preco * item.quantidade) }}</span>
-            <button
-              class="text-red-400 hover:text-red-600 transition-colors"
-              @click="carrinho.removerItem(item.produtoId)"
-            >
-              <i class="pi pi-trash text-sm" />
-            </button>
+          <!-- Ações: embaixo no mobile, ao lado no desktop -->
+          <div class="flex items-center justify-between gap-3 pt-3 border-t border-zinc-100">
+            <div class="flex items-center gap-2">
+              <button
+                type="button"
+                aria-label="Diminuir quantidade"
+                class="w-8 h-8 shrink-0 flex items-center justify-center rounded-full border border-zinc-200 text-zinc-600 hover:bg-zinc-100 active:bg-zinc-200"
+                @click.stop="carrinho.diminuir(item.produtoId)"
+              >−</button>
+              <span class="text-sm font-semibold w-6 text-center">{{ item.quantidade }}</span>
+              <button
+                type="button"
+                aria-label="Aumentar quantidade"
+                class="w-8 h-8 shrink-0 flex items-center justify-center rounded-full border border-zinc-200 text-zinc-600 hover:bg-zinc-100 active:bg-zinc-200"
+                @click.stop="carrinho.incrementar(item.produtoId)"
+              >+</button>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-bold text-zinc-900 text-right">
+                {{ preco(item.preco * item.quantidade) }}
+              </span>
+              <button
+                type="button"
+                aria-label="Remover item"
+                class="w-8 h-8 shrink-0 flex items-center justify-center text-red-400 hover:text-red-600 transition-colors"
+                @click.stop="carrinho.removerItem(item.produtoId)"
+              >
+                <i class="pi pi-trash text-sm" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -95,14 +126,29 @@ function enviarWhatsApp() {
           <span class="text-orange-500">{{ preco(carrinho.valorTotal) }}</span>
         </div>
 
+        <!-- Botão WhatsApp -->
         <button
+          type="button"
           class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
           @click="showModal = true"
         >
           <i class="pi pi-whatsapp" />
           Pedir pelo WhatsApp
         </button>
+
+        <!-- Botão Mercado Pago -->
         <button
+          type="button"
+          class="w-full mt-2 bg-sky-500 hover:bg-sky-600 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+          :disabled="carregandoMp"
+          @click="pagarMercadoPago"
+        >
+          <i :class="carregandoMp ? 'pi pi-spinner pi-spin' : 'pi pi-credit-card'" />
+          {{ carregandoMp ? 'Gerando pagamento...' : 'Pagar com Mercado Pago' }}
+        </button>
+
+        <button
+          type="button"
           class="w-full mt-2 text-sm text-zinc-500 hover:text-zinc-700 py-2 transition-colors"
           @click="carrinho.limpar()"
         >
@@ -117,7 +163,7 @@ function enviarWhatsApp() {
     v-model:visible="showModal"
     header="Finalizar pedido"
     :modal="true"
-    :style="{ width: '460px' }"
+    :style="{ width: '460px', maxWidth: '95vw' }"
   >
     <div class="space-y-4 py-2">
       <div>
@@ -139,6 +185,7 @@ function enviarWhatsApp() {
     </div>
     <template #footer>
       <button
+        type="button"
         class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
         :disabled="!nome || !telefone"
         @click="enviarWhatsApp"
@@ -149,3 +196,27 @@ function enviarWhatsApp() {
     </template>
   </Dialog>
 </template>
+
+<style scoped>
+/* Mantém a rolagem, mas esconde a barra */
+.lista-itens {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.lista-itens::-webkit-scrollbar {
+  display: none;
+}
+</style>
+
+<style>
+/* Largura do Drawer: tela cheia no mobile, painel largo no desktop */
+.drawer-carrinho {
+  width: 100% !important;
+}
+@media (min-width: 768px) {
+  .drawer-carrinho {
+    width: 34rem !important;
+    max-width: 90vw;
+  }
+}
+</style>

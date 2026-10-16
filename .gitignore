@@ -1,5 +1,6 @@
 # --- Segurança e Credenciais ---
 .env
+.payment.env
 .env.local
 .env.*.local
 *.pem

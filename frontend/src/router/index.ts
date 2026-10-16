@@ -30,7 +30,12 @@ const routes = [
                 path: "sobre",
                 name: "sobre",
                 component: () => import("@/pages/client/Sobre.vue")
-            }
+            },
+            {
+                path: "pagamento",
+                name: "pagamento",
+                component: () => import("@/pages/client/PagamentoRetorno.vue")
+            },
         ]
     },
     {
@@ -58,7 +63,7 @@ const routes = [
                     requiresAuth: true
                 }
             },
-            // 💡 ROTAS NOVAS usadas pela AppSidebar:
+            //  ROTAS NOVAS usadas pela AppSidebar:
             {
                 path: "categorias",
                 name: "admin-categorias",

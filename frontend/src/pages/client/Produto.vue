@@ -10,6 +10,7 @@ import type { Produto } from '@/types/produto'
 import ProdutoCard from '@/components/catalogo/ProdutoCard.vue'
 import Empty from '@/components/common/Empty.vue'
 import Loading from '@/components/common/Loading.vue'
+import { resolveMediaUrl } from '@/config/api'
 
 const route = useRoute()
 const produtoStore = useProdutosStore()
@@ -42,8 +43,7 @@ watch(
 function formatarUrlImagem(url?: string | null): string {
     if (!url) return PLACEHOLDER_IMG
     if (url.startsWith('http')) return url
-    const baseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/api\/?$/, '')
-    return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`
+    return resolveMediaUrl(url) || PLACEHOLDER_IMG
 }
 
 // Lista de imagens tratadas com Fallback

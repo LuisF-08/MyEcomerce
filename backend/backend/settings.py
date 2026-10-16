@@ -16,8 +16,21 @@ from dotenv import load_dotenv
 # ============================================================
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+REPO_ROOT = BASE_DIR.parent
 
+# Raiz do monorepo (.env), pasta backend e cwd (Vercel / runserver)
+load_dotenv(REPO_ROOT / ".env")
+load_dotenv(BASE_DIR / ".env")
+load_dotenv(BASE_DIR.parent / "payment.env")
 load_dotenv()
+
+# ============================================================
+# PAGAMENTO
+# ============================================================
+
+MERCADOPAGO_ACCESS_TOKEN = os.environ.get("MERCADOPAGO_ACCESS_TOKEN", "")
+MERCADOPAGO_WEBHOOK_SECRET = os.environ.get("MERCADOPAGO_WEBHOOK_SECRET", "")
+FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:5173")
 
 
 # ============================================================
@@ -35,26 +48,51 @@ DEBUG = config(
     cast=bool,
 )
 
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    ".vercel.app",
-    "*",
-]
+ALLOWED_HOSTS = config(
+    "ALLOWED_HOSTS",
+    default="localhost,127.0.0.1,.vercel.app",
+    cast=Csv(),
+)
 
+FRONTEND_URL = config(
+    "FRONTEND_URL",
+    default="http://localhost:5173",
+).rstrip("/")
 
 # ============================================================
-# CORS
+# CORS / CSRF (frontend separado na Vercel)
 # ============================================================
 
-CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOWED_ORIGINS = [
+_extra_cors = config("CORS_ALLOWED_ORIGINS", default="", cast=Csv())
+_default_origins = [
+    FRONTEND_URL,
     "http://localhost:5173",
     "http://localhost:3000",
-    "https://myecomerce-web.vercel.app",  # Seu domínio na Vercel
+    *_extra_cors,
 ]
+CORS_ALLOWED_ORIGINS = list(dict.fromkeys(o.rstrip("/") for o in _default_origins if o))
+
+# Em produção, restrinja origens; em dev pode liberar tudo
+CORS_ALLOW_ALL_ORIGINS = config(
+    "CORS_ALLOW_ALL_ORIGINS",
+    default=DEBUG,
+    cast=bool,
+)
+
+CSRF_TRUSTED_ORIGINS = list(
+    dict.fromkeys(
+        [
+            *CORS_ALLOWED_ORIGINS,
+            *config("CSRF_TRUSTED_ORIGINS", default="", cast=Csv()),
+        ]
+    )
+)
+
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    USE_X_FORWARDED_HOST = True
 
 # ============================================================
 # BANCO DE DADOS
@@ -98,11 +136,14 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework",
     "drf_spectacular",
+    "rest_framework_simplejwt.token_blacklist",
 
     "loja",
     "catalogo",
     "solicitacao",
     "api",
+    
+    "pagamento",
 ]
 
 

@@ -8,7 +8,9 @@ from api.serializers.solicitacao import (
     ItemSolicitacaoSerializer,
 )
 from api.permissions import AdminOuCria
-
+from rest_framework import generics
+from rest_framework.permissions import AllowAny
+from api.serializers.solicitacao import CheckoutSerializer
 
 class SolicitacaoViewSet(viewsets.ModelViewSet):
 
@@ -54,3 +56,7 @@ class ItemSolicitacaoViewSet(viewsets.ModelViewSet):
     serializer_class = ItemSolicitacaoSerializer
 
     permission_classes = [AdminOuCria]
+    
+class CheckoutView(generics.CreateAPIView):
+    serializer_class = CheckoutSerializer
+    permission_classes = [AllowAny] # Como não tem login pode ser efetuado direto

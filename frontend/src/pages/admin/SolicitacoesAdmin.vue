@@ -27,7 +27,8 @@ interface FiltroOption {
 }
 
 const filtroOptions: FiltroOption[] = [
-  { label: 'Todos', value: 'Todos', icon: 'pi pi-th-large', color: 'text-zinc-600' },
+  { label: 'Todos', value: 'Todos', icon: 'pi-credit-card', color: 'text-zinc-600' },
+  { label: 'Pagamento Pendente', value: 'pendente', icon: 'pi pi-sparkles', color: 'text-blue-500' },
   { label: 'Novo', value: 'Novo', icon: 'pi pi-sparkles', color: 'text-blue-500' },
   { label: 'Visto', value: 'Visto', icon: 'pi pi-eye', color: 'text-amber-500' },
   { label: 'Concluído', value: 'Concluído', icon: 'pi pi-check-circle', color: 'text-emerald-500' },
@@ -36,7 +37,7 @@ const filtroOptions: FiltroOption[] = [
 
 const filtro = ref<FiltroOption>(filtroOptions[0])
 
-const statusOptions = ['Novo', 'Visto', 'Concluído', 'Cancelado']
+const statusOptions = ['Pendente','Novo', 'Visto', 'Concluído', 'Cancelado']
 
 onMounted(async () => {
   await store.carregarSolicitacoes()
@@ -53,6 +54,7 @@ function quantidadePorStatus(status: string) {
 }
 
 const statusMeta: Record<string, { severity: string; icon: string }> = {
+  Pendente: { severity: 'info', icon: 'pi-credit-card'},
   Novo: { severity: 'info', icon: 'pi pi-sparkles' },
   Visto: { severity: 'warn', icon: 'pi pi-eye' },
   'Concluído': { severity: 'success', icon: 'pi pi-check-circle' },

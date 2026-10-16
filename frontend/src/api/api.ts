@@ -1,8 +1,8 @@
 import axios from "axios"
 
-// Garante que a URL base nunca termine com barra extra
-const rawApiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000/api"
-const API_URL = rawApiUrl.replace(/\/$/, "")
+import { getApiBaseUrl } from "@/config/api"
+
+const API_URL = getApiBaseUrl()
 
 const api = axios.create({
     baseURL: API_URL,

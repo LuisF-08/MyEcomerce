@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import type { Categoria } from '@/types/categoria'
+import { resolveMediaUrl } from '@/config/api'
 
 const props = defineProps<{ categoria: Categoria }>()
 const router = useRouter()
@@ -27,7 +28,7 @@ function navegarParaCategoria() {
     <div class="badge">
       <img
         v-if="categoria.imagem"
-        :src="categoria.imagem"
+        :src="resolveMediaUrl(categoria.imagem)"
         :alt="categoria.nome"
         loading="lazy"
       />

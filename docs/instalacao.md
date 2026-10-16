@@ -160,8 +160,21 @@ Faça backup desta pasta junto com `db.sqlite3`.
 ## Produção (orientações)
 
 - Defina `DEBUG=False`
-- Use PostgreSQL alterando `DATABASES` em `settings.py`
-- Sirva mídia via nginx ou S3
+- Use PostgreSQL (`DATABASE_URL` no `.env` ou nas variáveis da Vercel)
+- Sirva mídia via nginx ou S3 (na Vercel serverless o disco é efêmero)
 - Configure HTTPS
 - Use `gunicorn` ou similar como servidor WSGI
 - Build estático do frontend (`npm run build`) servido pelo nginx ou CDN
+
+### Vercel — frontend e backend separados
+
+1. **Projeto backend** — Root Directory: `backend`
+   - Variáveis: `SECRET_KEY`, `DEBUG=False`, `DATABASE_URL` (Neon pooled), `ALLOWED_HOSTS` (inclua `.vercel.app`), `FRONTEND_URL` (URL do SPA), `CORS_ALLOW_ALL_ORIGINS=False`
+   - Build Command (opcional): `bash build.sh`
+   - Rode migrações uma vez contra o Neon: `cd backend && python manage.py migrate`
+
+2. **Projeto frontend** — Root Directory: `frontend`
+   - Variável **`VITE_API_URL`** = `https://SEU-BACKEND.vercel.app/api` (obrigatório em deploy separado)
+   - Faça **redeploy** após alterar `VITE_API_URL` (valor é embutido no build)
+
+3. **Monorepo (um único projeto na raiz)** — use o `vercel.json` da raiz; o frontend usa `/api` automaticamente se `VITE_API_URL` não estiver definida.

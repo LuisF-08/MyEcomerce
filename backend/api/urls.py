@@ -6,6 +6,9 @@ from api.views.dashboard import DashboardAPIView, ExportarRelatorioCSVView
 from api.views.loja import LojaViewSet
 from api.views.solicitacao import ItemSolicitacaoViewSet, SolicitacaoViewSet
 from api.views.usuario import UsuarioView
+from api.views.solicitacao import CheckoutView, ItemSolicitacaoViewSet, SolicitacaoViewSet
+from api.views.pagamento import CriarPagamentoView
+from api.views.solicitacao import CheckoutView, ItemSolicitacaoViewSet, SolicitacaoViewSet
 
 router = DefaultRouter()
 
@@ -32,5 +35,7 @@ urlpatterns = [
     # Endpoints de Usuário e Dashboard
     path('me/', UsuarioView.as_view(), name='me'),
     path('dashboard/', DashboardAPIView.as_view(), name='dashboard'),
+    path('checkout/', CheckoutView.as_view(), name='checkout'),
     path('dashboard/exportar-csv/', ExportarRelatorioCSVView.as_view(), name='dashboard-exportar-csv'),
+    path('pagamentos/criar/', CriarPagamentoView.as_view(), name='pagamento-criar'),
 ]

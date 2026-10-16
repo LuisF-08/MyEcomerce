@@ -2,6 +2,7 @@ from django.db import models
 from catalogo.models import Produto
 
 class StatusSolicitacao(models.TextChoices):
+    AGUARDANDO_PAGAMENTO = "AGP", "Aguardando pagamento"
     NOVO = "NOV", "Novo"
     VISTO = "VIS", "Visto"
     CONCLUIDO = "CON", "Concluído"
@@ -32,7 +33,7 @@ class Solicitacao(models.Model):
     )
     mensagem = models.TextField(blank=True) # Ajustado para aceitar em branco (pode ser gerado via API)
     status = models.CharField(
-        max_length=3,
+        max_length=20,
         choices=StatusSolicitacao.choices,
         default=StatusSolicitacao.NOVO
     )

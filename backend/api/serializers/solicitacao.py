@@ -1,8 +1,7 @@
 from decimal import Decimal
 from django.db import transaction
 from rest_framework import serializers
-
-from solicitacao.models import Solicitacao, ItemSolicitacao
+from solicitacao.models import Solicitacao, ItemSolicitacao, StatusSolicitacao
 from catalogo.models import Produto
 
 
@@ -114,4 +113,51 @@ class SolicitacaoSerializer(serializers.ModelSerializer):
 
         solicitacao.save()
 
+        return solicitacao
+
+class ItemCheckoutSerializer(serializers.Serializer):
+    produto = serializers.PrimaryKeyRelatedField(queryset=Produto.objects.all())
+    quantidade = serializers.IntegerField(min_value=1, max_value=99)
+    variacao = serializers.CharField(required=False, allow_blank=True, max_length=20)
+
+
+class CheckoutSerializer(serializers.ModelSerializer):
+    itens = ItemCheckoutSerializer(many=True, write_only=True, allow_empty=False)
+
+    class Meta:
+        model = Solicitacao
+        fields = [
+            "id", "nome", "telefone", "email", "cep", "rua", "numero",
+            "referencia", "bairro", "cidade", "estado", "observacao",
+            "itens", "total", "status",
+        ]
+        read_only_fields = ["id", "total", "status"]
+
+    @transaction.atomic
+    def create(self, validated_data):
+        itens_data = validated_data.pop("itens")
+
+        solicitacao = Solicitacao.objects.create(
+            total=Decimal("0.00"),
+            status=StatusSolicitacao.AGUARDANDO_PAGAMENTO,
+            **validated_data,
+        )
+
+        total = Decimal("0.00")
+        for item in itens_data:
+            produto = item["produto"]
+            subtotal = produto.preco * item["quantidade"]  # preço vem do BANCO
+            ItemSolicitacao.objects.create(
+                solicitacao=solicitacao,
+                produto=produto,
+                produto_nome=produto.nome,
+                preco_unitario=produto.preco,
+                quantidade=item["quantidade"],
+                subtotal=subtotal,
+                variacao=item.get("variacao", ""),
+            )
+            total += subtotal
+
+        solicitacao.total = total
+        solicitacao.save(update_fields=["total"])
         return solicitacao
