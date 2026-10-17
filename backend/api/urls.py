@@ -7,8 +7,7 @@ from api.views.loja import LojaViewSet
 from api.views.solicitacao import ItemSolicitacaoViewSet, SolicitacaoViewSet
 from api.views.usuario import UsuarioView
 from api.views.solicitacao import CheckoutView, ItemSolicitacaoViewSet, SolicitacaoViewSet
-from api.views.pagamento import CriarPagamentoView
-from api.views.solicitacao import CheckoutView, ItemSolicitacaoViewSet, SolicitacaoViewSet
+from api.views.pagamento import CriarPagamentoView, ConfirmarPagamentoView
 
 router = DefaultRouter()
 
@@ -38,4 +37,5 @@ urlpatterns = [
     path('checkout/', CheckoutView.as_view(), name='checkout'),
     path('dashboard/exportar-csv/', ExportarRelatorioCSVView.as_view(), name='dashboard-exportar-csv'),
     path('pagamentos/criar/', CriarPagamentoView.as_view(), name='pagamento-criar'),
+    path('pagamentos/confirmar/', ConfirmarPagamentoView.as_view(), name='pagamento-confirmar'),
 ]

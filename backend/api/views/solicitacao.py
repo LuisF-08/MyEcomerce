@@ -8,6 +8,7 @@ from api.serializers.solicitacao import (
     ItemSolicitacaoSerializer,
 )
 from api.permissions import AdminOuCria
+from rest_framework.permissions import IsAdminUser
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from api.serializers.solicitacao import CheckoutSerializer
@@ -20,7 +21,9 @@ class SolicitacaoViewSet(viewsets.ModelViewSet):
 
     serializer_class = SolicitacaoSerializer
 
-    permission_classes = [AdminOuCria]
+    permission_classes = [IsAdminUser]
+
+    authentication_classes = []
 
     @action(
         detail=True,
@@ -43,6 +46,8 @@ class SolicitacaoViewSet(viewsets.ModelViewSet):
 
         solicitacao.status = novo_status
         solicitacao.save(update_fields=["status"])
+        
+        authentication_classes = []
 
         serializer = self.get_serializer(solicitacao)
 
@@ -54,9 +59,9 @@ class ItemSolicitacaoViewSet(viewsets.ModelViewSet):
     queryset = ItemSolicitacao.objects.all()
 
     serializer_class = ItemSolicitacaoSerializer
-
-    permission_classes = [AdminOuCria]
+    
+    permission_classes = [IsAdminUser]
     
 class CheckoutView(generics.CreateAPIView):
     serializer_class = CheckoutSerializer
-    permission_classes = [AllowAny] # Como não tem login pode ser efetuado direto
+    permission_classes = [AllowAny]

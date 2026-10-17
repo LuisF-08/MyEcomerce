@@ -14,15 +14,15 @@ class Solicitacao(models.Model):
     telefone = models.CharField(max_length=20)
     email = models.EmailField(blank=True)
     cep = models.CharField(max_length=9, blank=True)
-    rua = models.CharField(max_length=200)
-    numero = models.CharField(max_length=20)
     referencia = models.CharField(
         max_length=200,
         blank=True
     )
-    bairro = models.CharField(max_length=200)
-    cidade = models.CharField(max_length=100)
-    estado = models.CharField(max_length=50)
+    rua = models.CharField(max_length=200, blank=True)
+    numero = models.CharField(max_length=20, blank=True)
+    bairro = models.CharField(max_length=200, blank=True)
+    cidade = models.CharField(max_length=100, blank=True)
+    estado = models.CharField(max_length=50, blank=True)
     observacao = models.TextField(
         blank=True
     )

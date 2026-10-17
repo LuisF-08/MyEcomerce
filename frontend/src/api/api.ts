@@ -60,8 +60,8 @@ api.interceptors.response.use(
                 localStorage.removeItem("refresh")
                 
                 // Redireciona para o caminho CORRETO da tela de login do Admin
-                if (window.location.pathname !== "/admin/login") {
-                    window.location.href = "/admin/login"
+                if (window.location.pathname !== "/login") {
+                    window.location.href = "/login"
                 }
                 
                 return Promise.reject(refreshError)

@@ -15,6 +15,7 @@ class Pagamento(models.Model):
         related_name="pagamentos",
     )
     preference_id = models.CharField(max_length=100, blank=True)
+    
     # id do mercado pago
     mp_payment_id = models.CharField(
         max_length=50, unique=True, null=True, blank=True

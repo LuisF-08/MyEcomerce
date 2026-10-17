@@ -8,9 +8,13 @@ from api.services.pagamento import ErroMercadoPago, criar_preferencia
 from pagamento.models import Pagamento
 from solicitacao.models import StatusSolicitacao
 
+from api.services.concilia import PagamentoInvalido, conciliar_pagamento
+from api.serializers.pagamento import ConfirmarPagamentoSerializer
+
 
 class CriarPagamentoView(APIView):
     permission_classes = [AllowAny]
+    authentication_classes = []
 
     def post(self, request):
         serializer = CriarPagamentoSerializer(data=request.data)
@@ -59,3 +63,31 @@ class CriarPagamentoView(APIView):
             },
             status=status.HTTP_201_CREATED,
         )
+        
+class ConfirmarPagamentoView(APIView):
+    permission_classes = [AllowAny]
+    authentication_classes = []
+    
+    def post(self, request):
+        serializer = ConfirmarPagamentoSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        try:
+            pagamento = conciliar_pagamento(serializer.validated_data["payment_id"])
+        except PagamentoInvalido as e:
+            return Response(
+                {"detail": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        except ErroMercadoPago:
+            return Response(
+                {"detail": "Não foi possível consultar o pagamento."},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
+        return Response(
+            {
+                "status": pagamento.status,
+                "solicitacao": pagamento.solicitacao_id,
+            }
+        )
+        

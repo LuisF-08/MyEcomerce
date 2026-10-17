@@ -32,8 +32,8 @@ const routes = [
                 component: () => import("@/pages/client/Sobre.vue")
             },
             {
-                path: "pagamento",
-                name: "pagamento",
+                path: "pagamento/retorno",
+                name: "pagamento-retorno",
                 component: () => import("@/pages/client/PagamentoRetorno.vue")
             },
         ]

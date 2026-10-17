@@ -7,4 +7,5 @@ from api.permissions import AdminOuLeitura
 class LojaViewSet(viewsets.ModelViewSet):
     queryset = Loja.objects.all()
     serializer_class = LojaSerializer
+    authentication_classes = []
     permission_classes = [AdminOuLeitura]

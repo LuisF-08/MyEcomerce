@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useCarrinhoStore } from '@/stores/carrinho'
+import { usePagamento } from '../controller/usePagamento.ts'
 import Drawer from 'primevue/drawer'
 import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
@@ -15,8 +16,31 @@ const telefone = ref('')
 const endereco = ref('')
 const obs = ref('')
 
-// Estado do botão do Mercado Pago
-const carregandoMp = ref(false)
+// O mesmo modal serve para WhatsApp e para Mercado Pago
+type Modo = 'whatsapp' | 'mercadopago'
+const modo = ref<Modo>('whatsapp')
+
+// Estado e ação do pagamento vêm do composable
+const {
+  carregando: carregandoMp,
+  erro,
+  pagarMercadoPago: iniciarPagamento,
+} = usePagamento()
+
+function abrirModal(m: Modo) {
+  modo.value = m
+  erro.value = ''
+  showModal.value = true
+}
+
+function pagarMercadoPago() {
+  iniciarPagamento({
+    nome: nome.value,
+    telefone: telefone.value,
+    endereco: endereco.value,
+    observacao: obs.value,
+  })
+}
 
 const preco = (v: number) =>
   v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
@@ -29,19 +53,10 @@ function enviarWhatsApp() {
   const msg = encodeURIComponent(
     `Olá! Gostaria de fazer um pedido:\n\n${itensTexto}\n\nTotal: ${preco(carrinho.valorTotal)}\n\nNome: ${nome.value}\nTelefone: ${telefone.value}${endereco.value ? `\nEndereço: ${endereco.value}` : ''}${obs.value ? `\nObs: ${obs.value}` : ''}`,
   )
-  window.open(`https://wa.me/5511999999999?text=${msg}`, '_blank')
+  window.open(`https://wa.me/55999081860?text=${msg}`, '_blank')
   carrinho.limpar()
   showModal.value = false
   carrinho.fechar()
-}
-
-async function pagarMercadoPago() {
-  carregandoMp.value = true
-  try {
-    // TODO: sua lógica do Mercado Pago entra aqui
-  } finally {
-    carregandoMp.value = false
-  }
 }
 </script>
 
@@ -70,7 +85,7 @@ async function pagarMercadoPago() {
           :key="item.produtoId"
           class="border border-zinc-200 rounded-2xl p-4 flex flex-col gap-4"
         >
-          <!-- Produto: sempre em cima no mobile -->
+          <!-- Produto -->
           <div class="flex items-center gap-4 min-w-0">
             <ImagemComFallback
               :src="item.imagem"
@@ -84,7 +99,7 @@ async function pagarMercadoPago() {
             </div>
           </div>
 
-          <!-- Ações: embaixo no mobile, ao lado no desktop -->
+          <!-- Ações -->
           <div class="flex items-center justify-between gap-3 pt-3 border-t border-zinc-100">
             <div class="flex items-center gap-2">
               <button
@@ -130,7 +145,7 @@ async function pagarMercadoPago() {
         <button
           type="button"
           class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
-          @click="showModal = true"
+          @click="abrirModal('whatsapp')"
         >
           <i class="pi pi-whatsapp" />
           Pedir pelo WhatsApp
@@ -139,12 +154,11 @@ async function pagarMercadoPago() {
         <!-- Botão Mercado Pago -->
         <button
           type="button"
-          class="w-full mt-2 bg-sky-500 hover:bg-sky-600 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
-          :disabled="carregandoMp"
-          @click="pagarMercadoPago"
+          class="w-full mt-2 bg-sky-500 hover:bg-sky-600 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+          @click="abrirModal('mercadopago')"
         >
-          <i :class="carregandoMp ? 'pi pi-spinner pi-spin' : 'pi pi-credit-card'" />
-          {{ carregandoMp ? 'Gerando pagamento...' : 'Pagar com Mercado Pago' }}
+          <i class="pi pi-credit-card" />
+          Pagar com Mercado Pago
         </button>
 
         <button
@@ -158,7 +172,7 @@ async function pagarMercadoPago() {
     </div>
   </Drawer>
 
-  <!-- Modal do formulário WhatsApp -->
+  <!-- Modal do formulário (WhatsApp e Mercado Pago) -->
   <Dialog
     v-model:visible="showModal"
     header="Finalizar pedido"
@@ -183,8 +197,12 @@ async function pagarMercadoPago() {
         <Textarea v-model="obs" rows="2" placeholder="Tamanho, cor, instruções..." class="w-full" />
       </div>
     </div>
+
     <template #footer>
+      <p v-if="erro" class="text-sm text-red-500 mb-3 text-left w-full">{{ erro }}</p>
+
       <button
+        v-if="modo === 'whatsapp'"
         type="button"
         class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
         :disabled="!nome || !telefone"
@@ -192,6 +210,17 @@ async function pagarMercadoPago() {
       >
         <i class="pi pi-whatsapp" />
         Enviar pedido pelo WhatsApp
+      </button>
+
+      <button
+        v-else
+        type="button"
+        class="w-full bg-sky-500 hover:bg-sky-600 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+        :disabled="!nome || !telefone || carregandoMp"
+        @click="pagarMercadoPago"
+      >
+        <i :class="carregandoMp ? 'pi pi-spinner pi-spin' : 'pi pi-credit-card'" />
+        {{ carregandoMp ? 'Gerando pagamento...' : 'Ir para o pagamento' }}
       </button>
     </template>
   </Dialog>

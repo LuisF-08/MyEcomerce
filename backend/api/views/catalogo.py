@@ -20,7 +20,7 @@ class ProdutoViewSet(viewsets.ModelViewSet):
     queryset = Produto.objects.all()
     serializer_class = ProdutoSerializer
     permission_classes = [AdminOuLeitura]
-
+    
     # Permite JSON, FormData e upload de imagens
     parser_classes = (
         MultiPartParser,

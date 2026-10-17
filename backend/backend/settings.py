@@ -30,8 +30,6 @@ load_dotenv()
 
 MERCADOPAGO_ACCESS_TOKEN = os.environ.get("MERCADOPAGO_ACCESS_TOKEN", "")
 MERCADOPAGO_WEBHOOK_SECRET = os.environ.get("MERCADOPAGO_WEBHOOK_SECRET", "")
-FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:5173")
-
 
 # ============================================================
 # SEGURANÇA
@@ -111,6 +109,7 @@ if DATABASE_URL:
             conn_health_checks=True,
         )
     }
+    DATABASES["default"].setdefault("OPTIONS", {})["connect_timeout"] = 10
 else:
     DATABASES = {
         "default": {
@@ -144,6 +143,7 @@ INSTALLED_APPS = [
     "api",
     
     "pagamento",
+    "django_extensions",
 ]
 
 
