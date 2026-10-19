@@ -117,10 +117,10 @@ async function handleLogin() {
       <!-- Dica de Credenciais -->
       <div class="mt-6 pt-4 border-t border-zinc-100 text-center">
         <p class="text-xs text-zinc-400">
-          Credenciais Superuser: <span class="font-mono font-medium text-zinc-600">admin / admin</span>
+          Credenciais Superuser: <span class="font-mono font-medium text-zinc-600">* / *</span>
         </p>
       </div>
-
+      <!-- (admin / admin ) usúario e a senha -->
     </div>
   </div>
 </template>

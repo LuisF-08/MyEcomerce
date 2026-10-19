@@ -2,10 +2,12 @@ import os
 import sys
 from django.core.wsgi import get_wsgi_application
 
-# Adiciona a pasta raiz do backend ao sys.path do Python
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if BASE_DIR not in sys.path:
-    sys.path.append(BASE_DIR)
+# Pega o diretório atual do wsgi.py e adiciona a pasta pai ao sys.path
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+
+if parent_dir not in sys.path:
+    sys.path.append(parent_dir)
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
 
