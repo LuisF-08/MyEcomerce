@@ -79,11 +79,17 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 
 # Em produção, restrinja origens; em dev pode liberar tudo
-CORS_ALLOW_ALL_ORIGINS = config(
-    "CORS_ALLOW_ALL_ORIGINS",
-    default=DEBUG,
-    cast=bool,
-)
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://my-ecomerce-dk4n.vercel.app",
+    "https://my-ecomerce-dk4n-aqye61h5f-luisf-9.vercel.app", # URL exata atual do seu front
+]
+
+# Ou para permitir qualquer subdomínio da Vercel sem dor de cabeça:
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://.*\.vercel\.app$",
+]
 
 CSRF_TRUSTED_ORIGINS = list(
     dict.fromkeys(
