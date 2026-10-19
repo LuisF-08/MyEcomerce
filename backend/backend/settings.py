@@ -69,27 +69,20 @@ ALLOWED_HOSTS = [
     ".vercel.app",  # Permite qualquer subdomínio da Vercel
 ]
 
-# Certifique-se de incluir a URL exata da Vercel (com https://)
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://localhost:3000",
-    "https://my-ecomerce-dk4n.vercel.app",  
-]
-
-CORS_ALLOW_CREDENTIALS = True
-
 # Em produção, restrinja origens; em dev pode liberar tudo
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:3000",
     "https://my-ecomerce-dk4n.vercel.app",
-    "https://my-ecomerce-dk4n-aqye61h5f-luisf-9.vercel.app", # URL exata atual do seu front
+    "https://my-ecomerce-dk4n-aqye61h5f-luisf-9.vercel.app",
 ]
 
-# Ou para permitir qualquer subdomínio da Vercel sem dor de cabeça:
+# Libera qualquer deploy de preview da Vercel automaticamente
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://.*\.vercel\.app$",
 ]
+
+CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = list(
     dict.fromkeys(
@@ -164,12 +157,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-
-    # WhiteNoise precisa ficar logo depois do SecurityMiddleware
-    "whitenoise.middleware.WhiteNoiseMiddleware",
-
     "corsheaders.middleware.CorsMiddleware",
-
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
