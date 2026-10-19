@@ -46,8 +46,6 @@ DEBUG = config(
     cast=bool,
 )
 
-ALLOWED_HOSTS = ["*"]
-
 FRONTEND_URL = config(
     "FRONTEND_URL",
     default="http://localhost:5173",
@@ -57,8 +55,6 @@ FRONTEND_URL = config(
 # CORS / CSRF (frontend separado na Vercel)
 # ============================================================
 
-CORS_ALLOW_CREDENTIALS = True
-
 _extra_cors = config("CORS_ALLOWED_ORIGINS", default="", cast=Csv())
 _default_origins = [
     FRONTEND_URL,
@@ -66,7 +62,21 @@ _default_origins = [
     "http://localhost:3000",
     *_extra_cors,
 ]
-CORS_ALLOWED_ORIGINS = list(dict.fromkeys(o.rstrip("/") for o in _default_origins if o))
+
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    ".vercel.app",  # Permite qualquer subdomínio da Vercel
+]
+
+# Certifique-se de incluir a URL exata da Vercel (com https://)
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://my-ecomerce-dk4n.vercel.app",  
+]
+
+CORS_ALLOW_CREDENTIALS = True
 
 # Em produção, restrinja origens; em dev pode liberar tudo
 CORS_ALLOW_ALL_ORIGINS = config(

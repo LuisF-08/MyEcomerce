@@ -19,7 +19,7 @@
   ],
   "routes": [
     {
-      "src": "/(admin|api|schema|media)(.*)",
+      "src": "/(admin|api|schema|media|loja|catalogo|solicitacao|pagamento)(.*)",
       "dest": "backend/backend/wsgi.py"
     },
     {
