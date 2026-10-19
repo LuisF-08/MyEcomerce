@@ -46,11 +46,7 @@ DEBUG = config(
     cast=bool,
 )
 
-ALLOWED_HOSTS = config(
-    "ALLOWED_HOSTS",
-    default="localhost,127.0.0.1,.vercel.app",
-    cast=Csv(),
-)
+ALLOWED_HOSTS = ["*"]
 
 FRONTEND_URL = config(
     "FRONTEND_URL",
