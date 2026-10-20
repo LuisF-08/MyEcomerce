@@ -23,8 +23,6 @@ class SolicitacaoViewSet(viewsets.ModelViewSet):
 
     permission_classes = [IsAdminUser]
 
-    authentication_classes = []
-
     @action(
         detail=True,
         methods=["patch"],
@@ -65,3 +63,4 @@ class ItemSolicitacaoViewSet(viewsets.ModelViewSet):
 class CheckoutView(generics.CreateAPIView):
     serializer_class = CheckoutSerializer
     permission_classes = [AllowAny]
+    authentication_classes = []
