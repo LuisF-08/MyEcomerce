@@ -41,6 +41,12 @@ class SolicitacaoViewSet(viewsets.ModelViewSet):
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
+        
+        if novo_status not in StatusSolicitacao.values:
+            return Response({
+                "status": "Status inválido."}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         solicitacao.status = novo_status
         solicitacao.save(update_fields=["status"])

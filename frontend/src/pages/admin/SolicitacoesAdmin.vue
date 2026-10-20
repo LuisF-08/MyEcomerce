@@ -13,62 +13,86 @@ import Select from 'primevue/select'
 import SelectButton from 'primevue/selectbutton'
 import Avatar from 'primevue/avatar'
 import Divider from 'primevue/divider'
-import Skeleton from 'primevue/skeleton'
 
 const toast = useToast()
 const store = useSolicitacaoStore()
 const { solicitacoes, solicitacaoSelecionada } = storeToRefs(store)
 
+/* ------------------------------------------------------------------ */
+/* Status: a API usa CÓDIGOS (AGP, NOV, VIS, CON, CAN).                */
+/* O texto em português é só para exibição.                            */
+/* ------------------------------------------------------------------ */
+type StatusCodigo = 'AGP' | 'NOV' | 'VIS' | 'CON' | 'CAN'
+
+interface StatusInfo {
+  label: string
+  severity: 'info' | 'warn' | 'success' | 'danger' | 'secondary'
+  icon: string
+  color: string
+}
+
+const STATUS: Record<StatusCodigo, StatusInfo> = {
+  AGP: { label: 'Aguardando pagamento', severity: 'secondary', icon: 'pi pi-wallet', color: 'text-zinc-500' },
+  NOV: { label: 'Novo', severity: 'info', icon: 'pi pi-sparkles', color: 'text-blue-500' },
+  VIS: { label: 'Visto', severity: 'warn', icon: 'pi pi-eye', color: 'text-amber-500' },
+  CON: { label: 'Concluído', severity: 'success', icon: 'pi pi-check-circle', color: 'text-emerald-500' },
+  CAN: { label: 'Cancelado', severity: 'danger', icon: 'pi pi-times-circle', color: 'text-red-500' },
+}
+
+const INFO_PADRAO: StatusInfo = {
+  label: 'Desconhecido',
+  severity: 'secondary',
+  icon: 'pi pi-question-circle',
+  color: 'text-zinc-400',
+}
+
+function infoStatus(codigo: string): StatusInfo {
+  return STATUS[codigo as StatusCodigo] ?? { ...INFO_PADRAO, label: codigo || INFO_PADRAO.label }
+}
+
 interface FiltroOption {
   label: string
-  value: string
+  value: 'TODOS' | StatusCodigo
   icon: string
   color: string
 }
 
 const filtroOptions: FiltroOption[] = [
-  { label: 'Todos', value: 'Todos', icon: 'pi pi-credit-card', color: 'text-zinc-600' },
-  { label: 'Pagamento Pendente', value: 'Pendente', icon: 'pi pi-wallet', color: 'text-blue-500' },
-  { label: 'Novo', value: 'Novo', icon: 'pi pi-sparkles', color: 'text-blue-500' },
-  { label: 'Visto', value: 'Visto', icon: 'pi pi-eye', color: 'text-amber-500' },
-  { label: 'Concluído', value: 'Concluído', icon: 'pi pi-check-circle', color: 'text-emerald-500' },
-  { label: 'Cancelado', value: 'Cancelado', icon: 'pi pi-times-circle', color: 'text-red-500' },
+  { label: 'Todos', value: 'TODOS', icon: 'pi pi-list', color: 'text-zinc-600' },
+  ...(Object.keys(STATUS) as StatusCodigo[]).map((codigo) => ({
+    label: STATUS[codigo].label,
+    value: codigo,
+    icon: STATUS[codigo].icon,
+    color: STATUS[codigo].color,
+  })),
 ]
 
-const filtro = ref<FiltroOption>(filtroOptions[0])
+// Opções do Select de troca de status (não inclui "Aguardando pagamento",
+// que só muda automaticamente quando o pagamento é aprovado)
+const statusOptions = (['NOV', 'VIS', 'CON', 'CAN'] as StatusCodigo[]).map((codigo) => ({
+  label: STATUS[codigo].label,
+  value: codigo,
+}))
 
-const statusOptions = ['Pendente', 'Novo', 'Visto', 'Concluído', 'Cancelado']
+const filtro = ref<FiltroOption>(filtroOptions[0]!)
 
 onMounted(async () => {
   await store.carregarSolicitacoes()
 })
 
 const filtradas = computed(() => {
-  if (filtro.value.value === 'Todos') return solicitacoes.value
+  if (filtro.value.value === 'TODOS') return solicitacoes.value
   return solicitacoes.value.filter((s) => s.status === filtro.value.value)
 })
 
-function quantidadePorStatus(status: string) {
-  if (status === 'Todos') return solicitacoes.value.length
-  return solicitacoes.value.filter((s) => s.status === status).length
+function quantidadePorStatus(valor: string) {
+  if (valor === 'TODOS') return solicitacoes.value.length
+  return solicitacoes.value.filter((s) => s.status === valor).length
 }
 
-const statusMeta: Record<string, { severity: string; icon: string }> = {
-  Pendente: { severity: 'info', icon: 'pi pi-wallet' },
-  Novo: { severity: 'info', icon: 'pi pi-sparkles' },
-  Visto: { severity: 'warn', icon: 'pi pi-eye' },
-  'Concluído': { severity: 'success', icon: 'pi pi-check-circle' },
-  Cancelado: { severity: 'danger', icon: 'pi pi-times-circle' },
-}
-
-function statusSeverity(status: string) {
-  return statusMeta[status]?.severity || 'secondary'
-}
-
-function statusIcon(status: string) {
-  return statusMeta[status]?.icon || 'pi pi-question-circle'
-}
-
+/* ------------------------------------------------------------------ */
+/* Formatação                                                          */
+/* ------------------------------------------------------------------ */
 function preco(valor: number | string | undefined | null) {
   const numero = Number(valor)
   if (Number.isNaN(numero)) return 'R$ 0,00'
@@ -88,19 +112,29 @@ function formatDate(data: string | undefined) {
   })
 }
 
-function endereco(solicitacao: typeof solicitacoes.value[number]) {
+function endereco(solicitacao: (typeof solicitacoes.value)[number]) {
   if (!solicitacao.rua) return ''
-  return `${solicitacao.rua}, ${solicitacao.numero} - ${solicitacao.bairro}, ${solicitacao.cidade} - ${solicitacao.estado}`
+  const partes = [
+    solicitacao.rua,
+    solicitacao.numero,
+    solicitacao.bairro,
+    solicitacao.cidade,
+    solicitacao.estado,
+  ].filter(Boolean)
+  return partes.join(', ')
 }
 
 function iniciais(nome: string) {
   if (!nome) return '?'
-  const partes = nome.trim().split(' ')
+  const partes = nome.trim().split(/\s+/)
   const primeira = partes[0]?.[0] || ''
-  const ultima = partes.length > 1 ? partes[partes.length - 1][0] : ''
+  const ultima = partes.length > 1 ? partes[partes.length - 1]?.[0] || '' : ''
   return (primeira + ultima).toUpperCase()
 }
 
+/* ------------------------------------------------------------------ */
+/* Ações                                                               */
+/* ------------------------------------------------------------------ */
 async function changeStatus(id: number, status: string) {
   try {
     await store.atualizarStatus(id, status)
@@ -135,7 +169,7 @@ function abrirWhatsApp(telefone: string) {
   window.open(`https://wa.me/55${numero}`, '_blank')
 }
 
-function selecionar(solicitacao: typeof solicitacoes.value[number]) {
+function selecionar(solicitacao: (typeof solicitacoes.value)[number]) {
   solicitacaoSelecionada.value = solicitacao
 }
 </script>
@@ -150,11 +184,11 @@ function selecionar(solicitacao: typeof solicitacoes.value[number]) {
       </div>
       <div>
         <h2 class="text-lg font-bold text-zinc-900">Solicitações</h2>
-        <p class="text-sm text-zinc-500">Pedidos recebidos pelo WhatsApp</p>
+        <p class="text-sm text-zinc-500">Pedidos recebidos pelo WhatsApp e pelo Mercado Pago</p>
       </div>
     </div>
 
-    <!-- Filtros (PrimeVue SelectButton) -->
+    <!-- Filtros -->
     <SelectButton
       v-model="filtro"
       :options="filtroOptions"
@@ -164,7 +198,7 @@ function selecionar(solicitacao: typeof solicitacoes.value[number]) {
     >
       <template #option="{ option }">
         <div class="flex items-center gap-2 px-1">
-          <i :class="[option.icon, option.color === filtro.color ? '' : option.color]" />
+          <i :class="[option.icon, option.color]" />
           <span class="font-medium">{{ option.label }}</span>
           <span
             class="text-xs rounded-full px-1.5 py-0.5 min-w-[1.25rem] text-center"
@@ -189,7 +223,6 @@ function selecionar(solicitacao: typeof solicitacoes.value[number]) {
 
       <!-- Tabela -->
       <div class="flex-1 bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-sm">
-
         <DataTable
           :value="filtradas"
           v-model:selection="solicitacaoSelecionada"
@@ -245,11 +278,14 @@ function selecionar(solicitacao: typeof solicitacoes.value[number]) {
 
           <Column field="status" header="Status">
             <template #body="{ data }">
-              <Tag :value="data.status" :severity="statusSeverity(data.status)" :icon="statusIcon(data.status)" />
+              <Tag
+                :value="infoStatus(data.status).label"
+                :severity="infoStatus(data.status).severity"
+                :icon="infoStatus(data.status).icon"
+              />
             </template>
           </Column>
         </DataTable>
-
       </div>
 
       <!-- Painel de detalhes -->
@@ -263,9 +299,9 @@ function selecionar(solicitacao: typeof solicitacoes.value[number]) {
             <h3 class="font-bold text-zinc-900">#{{ solicitacaoSelecionada.id }}</h3>
           </div>
           <Tag
-            :value="solicitacaoSelecionada.status"
-            :severity="statusSeverity(solicitacaoSelecionada.status)"
-            :icon="statusIcon(solicitacaoSelecionada.status)"
+            :value="infoStatus(solicitacaoSelecionada.status).label"
+            :severity="infoStatus(solicitacaoSelecionada.status).severity"
+            :icon="infoStatus(solicitacaoSelecionada.status).icon"
           />
         </div>
 
@@ -341,19 +377,22 @@ function selecionar(solicitacao: typeof solicitacoes.value[number]) {
           <Select
             :model-value="solicitacaoSelecionada.status"
             :options="statusOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Selecionar status"
             class="w-full !rounded-xl !text-sm"
             @update:model-value="(value) => changeStatus(solicitacaoSelecionada!.id, value)"
           >
             <template #value="{ value }">
               <div class="flex items-center gap-2">
-                <i :class="statusIcon(value)" />
-                <span>{{ value }}</span>
+                <i :class="infoStatus(value).icon" />
+                <span>{{ infoStatus(value).label }}</span>
               </div>
             </template>
             <template #option="{ option }">
               <div class="flex items-center gap-2">
-                <i :class="statusIcon(option)" />
-                <span>{{ option }}</span>
+                <i :class="infoStatus(option.value).icon" />
+                <span>{{ option.label }}</span>
               </div>
             </template>
           </Select>
@@ -368,6 +407,5 @@ function selecionar(solicitacao: typeof solicitacoes.value[number]) {
       </div>
 
     </div>
-
   </div>
 </template>
