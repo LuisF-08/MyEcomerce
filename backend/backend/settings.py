@@ -134,19 +134,18 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "cloudinary_storage",             
     "django.contrib.staticfiles",
-
+    "cloudinary",
     "django_filters",
     "corsheaders",
     "rest_framework",
     "drf_spectacular",
     "rest_framework_simplejwt.token_blacklist",
-
     "loja",
     "catalogo",
     "solicitacao",
     "api",
-    
     "pagamento",
 ]
 
@@ -304,7 +303,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STORAGES = {
     "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.StaticFilesStorage",
