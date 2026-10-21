@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
+
+const props = defineProps<{ mobileOpen?: boolean }>()
+const emit = defineEmits<{ close: [] }>()
 
 const route = useRoute()
 
-/* ------------------------------------------------------------------ */
-/* Itens do menu (rotas nomeadas do vue-router)                        */
-/* ------------------------------------------------------------------ */
 const menuItems = [
   { label: 'Dashboard', icon: 'pi pi-home', routeName: 'admin-dashboard' },
   { label: 'Produtos', icon: 'pi pi-box', routeName: 'admin-produtos' },
@@ -16,19 +16,15 @@ const menuItems = [
   { label: 'Configurações', icon: 'pi pi-cog', routeName: 'admin-configuracoes' }
 ]
 
-/* ------------------------------------------------------------------ */
-/* Estado: pin (fixado expandido) / hover (overlay flutuante)          */
-/* ------------------------------------------------------------------ */
 const pinned = ref(true)
 const hovering = ref(false)
 
 const isExpanded = computed(() => pinned.value || hovering.value)
 const isFloatingOverlay = computed(() => !pinned.value && hovering.value)
 
-// Largura do slot reservado no layout: só muda com o pin, nunca
-// com o hover -> o resto da página nunca é empurrado ao passar o mouse.
-const slotWidthClass = computed(() => (pinned.value ? 'w-[260px]' : 'w-[76px]'))
-const asideWidthClass = computed(() => (isExpanded.value ? 'w-[260px]' : 'w-[76px]'))
+// Larguras só valem a partir de md (desktop). No mobile é sempre 260px na gaveta.
+const slotWidthClass = computed(() => (pinned.value ? 'md:w-[260px]' : 'md:w-[76px]'))
+const asideWidthClass = computed(() => (isExpanded.value ? 'md:w-[260px]' : 'md:w-[76px]'))
 
 function togglePin() {
   pinned.value = !pinned.value
@@ -41,9 +37,9 @@ function handleMouseLeave() {
   hovering.value = false
 }
 
-/* ------------------------------------------------------------------ */
-/* Tema claro/escuro — igual ao Header.vue (classe "my-app-dark")      */
-/* ------------------------------------------------------------------ */
+// Fecha a gaveta ao navegar
+watch(() => route.fullPath, () => emit('close'))
+
 const isDark = ref(false)
 
 function toggleTheme() {
@@ -58,15 +54,23 @@ onMounted(() => {
 </script>
 
 <template>
-  <!-- Slot: sempre ocupa espaço real no layout. Largura só muda ao
-       fixar/desfixar, nunca com o hover. -->
+  <!-- Fundo escurecido (apenas mobile) -->
   <div
-    class="relative sticky top-0 h-dvh shrink-0 transition-[width] duration-300 ease-in-out"
-    :class="slotWidthClass"
+    v-if="props.mobileOpen"
+    class="fixed inset-0 z-40 bg-black/50 md:hidden"
+    @click="emit('close')"
+  />
+
+  <!-- Mobile: gaveta fixa que desliza. Desktop: coluna sticky no layout. -->
+  <div
+    class="fixed inset-y-0 left-0 z-50 w-[260px] transition-transform duration-300 ease-in-out
+           md:sticky md:inset-y-auto md:top-0 md:h-dvh md:shrink-0 md:translate-x-0
+           md:transition-[width]"
+    :class="[props.mobileOpen ? 'translate-x-0' : '-translate-x-full', slotWidthClass]"
   >
     <aside
-      class="absolute inset-y-0 left-0 z-40 flex flex-col gap-2 overflow-hidden
-             bg-white/95 dark:bg-zinc-950/95 backdrop-blur-sm
+      class="absolute inset-y-0 left-0 z-40 flex flex-col gap-2 overflow-hidden w-[260px]
+             bg-white dark:bg-zinc-950 md:bg-white/95 md:dark:bg-zinc-950/95 backdrop-blur-sm
              border-r border-zinc-100 dark:border-zinc-800/60
              transition-[width,box-shadow] duration-300 ease-in-out"
       :class="[
@@ -92,13 +96,23 @@ onMounted(() => {
           </span>
         </div>
 
+        <!-- Fixar/recolher: só desktop -->
         <button
           v-show="isExpanded"
           @click="togglePin"
-          class="w-8 h-8 shrink-0 flex items-center justify-center rounded-full text-zinc-500 dark:text-zinc-400 transition-colors duration-200 hover:bg-orange-50 dark:hover:bg-orange-950/30 hover:text-orange-500"
+          class="hidden md:flex w-8 h-8 shrink-0 items-center justify-center rounded-full text-zinc-500 dark:text-zinc-400 transition-colors duration-200 hover:bg-orange-50 dark:hover:bg-orange-950/30 hover:text-orange-500"
           :aria-label="pinned ? 'Recolher menu' : 'Fixar menu'"
         >
           <i :class="['pi', pinned ? 'pi-angle-left' : 'pi-angle-right']" />
+        </button>
+
+        <!-- Fechar: só mobile -->
+        <button
+          class="md:hidden w-8 h-8 shrink-0 flex items-center justify-center rounded-full text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/50"
+          aria-label="Fechar menu"
+          @click="emit('close')"
+        >
+          <i class="pi pi-times" />
         </button>
       </div>
 
@@ -126,7 +140,6 @@ onMounted(() => {
                 route.name === item.routeName ? 'bg-zinc-100 dark:bg-zinc-800/60 font-semibold' : ''
               ]"
             >
-              <!-- barrinha de destaque da rota ativa -->
               <span
                 v-if="route.name === item.routeName"
                 class="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-full bg-orange-500"
@@ -142,7 +155,6 @@ onMounted(() => {
 
       <!-- Rodapé -->
       <div class="flex flex-col gap-2 px-2 pb-3 pt-2 border-t border-zinc-100 dark:border-zinc-800/60">
-        <!-- Toggle de tema (idêntico ao Header.vue) -->
         <div class="flex items-center gap-3 h-11 px-2.5" :class="isExpanded ? '' : 'justify-center px-0'">
           <button
             @click="toggleTheme"
@@ -165,7 +177,6 @@ onMounted(() => {
           </span>
         </div>
 
-        <!-- Ver loja -->
         <RouterLink
           :to="{ name: 'home' }"
           :title="!isExpanded ? 'Ver loja' : undefined"

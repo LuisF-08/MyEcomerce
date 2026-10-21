@@ -219,10 +219,10 @@ function selecionar(solicitacao: (typeof solicitacoes.value)[number]) {
       {{ store.erro }}
     </div>
 
-    <div class="flex gap-4 items-start">
+    <div class="flex flex-col lg:flex-row gap-4 items-stretch lg:items-start">
 
       <!-- Tabela -->
-      <div class="flex-1 bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-sm">
+      <div class="flex-1 min-w-0 w-full bg-white border border-zinc-200 rounded-2xl overflow-x-auto shadow-sm">
         <DataTable
           :value="filtradas"
           v-model:selection="solicitacaoSelecionada"
@@ -291,8 +291,8 @@ function selecionar(solicitacao: (typeof solicitacoes.value)[number]) {
       <!-- Painel de detalhes -->
       <div
         v-if="solicitacaoSelecionada"
-        class="w-80 shrink-0 bg-white border border-zinc-200 rounded-2xl p-5 space-y-4 shadow-sm"
-      >
+        class="w-full lg:w-80 lg:shrink-0 bg-white border border-zinc-200 rounded-2xl p-5 space-y-4 shadow-sm"
+        >
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <i class="pi pi-file text-zinc-400" />
