@@ -15,6 +15,7 @@ import Select from 'primevue/select'
 import Checkbox from 'primevue/checkbox'
 import Tag from 'primevue/tag'
 import type { Produto } from '@/types/produto'
+import PageHeader from '@/components/common/PageHeader.vue'
 
 const store = useProdutosStore()
 const catStore = useCategoriaStore()
@@ -164,21 +165,84 @@ const categoriaOptions = computed(() => catStore.categorias)
 </script>
 
 <template>
-  <div class="space-y-4">
+  <div class="p-4 sm:p-6 space-y-4 sm:space-y-5 max-w-7xl mx-auto">
     <Toast />
 
-    <div class="flex items-center justify-between">
-      <div>
-        <h2 class="text-lg font-bold text-zinc-900">Produtos</h2>
-        <p class="text-sm text-zinc-500">{{ store.produtos.length }} produtos cadastrados</p>
-      </div>
-      <Button label="Novo produto" icon="pi pi-plus" @click="openNew"
-        class="!bg-orange-500 !border-orange-500 hover:!bg-orange-600 !rounded-xl !font-semibold" />
-    </div>
+    <PageHeader
+      icon="pi pi-box"
+      title="Produtos"
+      subtitle="Gerencie o catálogo da sua loja"
+      :badge="`${store.produtos.length} ${store.produtos.length === 1 ? 'cadastrado' : 'cadastrados'}`"
+    >
+      <template #actions>
+        <Button
+          label="Novo produto"
+          icon="pi pi-plus"
+          class="w-full sm:w-auto !bg-orange-500 !border-orange-500 hover:!bg-orange-600 !rounded-xl !font-semibold"
+          @click="openNew"
+        />
+      </template>
+    </PageHeader>
 
     <p v-if="store.erro" class="text-sm text-red-500">{{ store.erro }}</p>
 
-    <div class="bg-white border border-zinc-200 rounded-2xl overflow-hidden">
+    <!-- MOBILE / TABLET: cards -->
+    <div class="lg:hidden space-y-3">
+      <div v-if="store.carregando" class="flex justify-center py-12">
+        <i class="pi pi-spin pi-spinner text-2xl text-orange-500" />
+      </div>
+
+      <div
+        v-else-if="!store.produtos.length"
+        class="flex flex-col items-center gap-2 py-12 text-zinc-400 bg-white dark:bg-zinc-900
+               border border-zinc-200 dark:border-zinc-800 rounded-2xl"
+      >
+        <i class="pi pi-box text-3xl" />
+        <span class="text-sm">Nenhum produto cadastrado</span>
+      </div>
+
+      <div
+        v-for="p in store.produtos"
+        :key="p.id"
+        class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-3 sm:p-4 shadow-sm"
+        :class="!p.ativo && 'opacity-70'"
+      >
+        <div class="flex gap-3">
+          <img
+            v-if="p.imagem_1"
+            :src="p.imagem_1"
+            :alt="p.nome"
+            class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover shrink-0"
+          />
+          <div v-else class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-zinc-100 dark:bg-zinc-800 shrink-0 flex items-center justify-center">
+            <i class="pi pi-image text-zinc-300 dark:text-zinc-600 text-xl" />
+          </div>
+
+          <div class="min-w-0 flex-1">
+            <p class="font-semibold text-zinc-900 dark:text-white truncate">{{ p.nome }}</p>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400 truncate">{{ p.categoria_nome || 'Sem categoria' }}</p>
+            <p class="font-bold text-orange-500 mt-1">{{ preco(p.preco) }}</p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800">
+          <Tag :value="`Estoque: ${p.quantidade}`" :severity="p.quantidade > 0 ? 'secondary' : 'danger'" />
+          <Tag :value="p.ativo ? 'Ativo' : 'Inativo'" :severity="p.ativo ? 'success' : 'danger'" />
+          <Tag v-if="p.destaque" value="Destaque" severity="warn" icon="pi pi-star-fill" />
+
+          <div class="ml-auto flex gap-1">
+            <Button icon="pi pi-pencil" size="small" text rounded @click="openEdit(p)" />
+            <Button icon="pi pi-trash" size="small" text rounded severity="danger" @click="confirmDelete(p.id)" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DESKTOP: tabela -->
+    <div
+      class="hidden lg:block bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800
+             rounded-2xl overflow-hidden shadow-sm"
+    >
       <DataTable :value="store.produtos" :loading="store.carregando" class="!text-sm">
         <Column field="imagem_1" header="Foto" style="width: 70px">
           <template #body="{ data }">
@@ -188,7 +252,7 @@ const categoriaOptions = computed(() => catStore.categorias)
               class="w-10 h-10 object-cover rounded-lg"
               :alt="data.nome"
             />
-            <div v-else class="w-10 h-10 rounded-lg bg-zinc-100" />
+            <div v-else class="w-10 h-10 rounded-lg bg-zinc-100 dark:bg-zinc-800" />
           </template>
         </Column>
         <Column field="nome" header="Nome" sortable />
@@ -223,27 +287,27 @@ const categoriaOptions = computed(() => catStore.categorias)
       v-model:visible="modalVisible"
       :header="editing.id ? 'Editar produto' : 'Novo produto'"
       :modal="true"
-      :style="{ width: '560px' }"
+      :style="{ width: '560px', maxWidth: '95vw' }"
     >
       <div class="space-y-4 py-2">
         <div>
-          <label class="text-xs font-semibold text-zinc-600 mb-1 block">Nome *</label>
+          <label class="text-xs font-semibold text-zinc-600 dark:text-zinc-300 mb-1 block">Nome *</label>
           <InputText v-model="editing.nome" class="w-full" placeholder="Nome do produto" />
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="text-xs font-semibold text-zinc-600 mb-1 block">Preço *</label>
+            <label class="text-xs font-semibold text-zinc-600 dark:text-zinc-300 mb-1 block">Preço *</label>
             <InputNumber v-model="editing.preco" mode="currency" currency="BRL" locale="pt-BR" class="w-full" />
           </div>
           <div>
-            <label class="text-xs font-semibold text-zinc-600 mb-1 block">Quantidade</label>
+            <label class="text-xs font-semibold text-zinc-600 dark:text-zinc-300 mb-1 block">Quantidade</label>
             <InputNumber v-model="editing.quantidade" class="w-full" :min="0" />
           </div>
         </div>
 
         <div>
-          <label class="text-xs font-semibold text-zinc-600 mb-1 block">Categoria</label>
+          <label class="text-xs font-semibold text-zinc-600 dark:text-zinc-300 mb-1 block">Categoria</label>
           <Select
             v-model="editing.categoria"
             :options="categoriaOptions"
@@ -254,10 +318,9 @@ const categoriaOptions = computed(() => catStore.categorias)
           />
         </div>
 
-        <!-- Inputs do tipo FILE para Upload de Imagens -->
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="text-xs font-semibold text-zinc-600 mb-1 block">Foto Principal</label>
+            <label class="text-xs font-semibold text-zinc-600 dark:text-zinc-300 mb-1 block">Foto Principal</label>
             <input
               type="file"
               accept="image/*"
@@ -266,7 +329,7 @@ const categoriaOptions = computed(() => catStore.categorias)
             />
           </div>
           <div>
-            <label class="text-xs font-semibold text-zinc-600 mb-1 block">Foto Secundária</label>
+            <label class="text-xs font-semibold text-zinc-600 dark:text-zinc-300 mb-1 block">Foto Secundária</label>
             <input
               type="file"
               accept="image/*"
@@ -277,18 +340,18 @@ const categoriaOptions = computed(() => catStore.categorias)
         </div>
 
         <div>
-          <label class="text-xs font-semibold text-zinc-600 mb-1 block">Descrição</label>
+          <label class="text-xs font-semibold text-zinc-600 dark:text-zinc-300 mb-1 block">Descrição</label>
           <Textarea v-model="editing.descricao" rows="3" class="w-full" />
         </div>
 
-        <div class="flex items-center gap-6">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
           <div class="flex items-center gap-2">
             <Checkbox v-model="editing.destaque" :binary="true" inputId="destaque" />
-            <label for="destaque" class="text-sm text-zinc-700">Produto em destaque</label>
+            <label for="destaque" class="text-sm text-zinc-700 dark:text-zinc-300">Produto em destaque</label>
           </div>
           <div class="flex items-center gap-2">
             <Checkbox v-model="editing.ativo" :binary="true" inputId="ativo" />
-            <label for="ativo" class="text-sm text-zinc-700">Produto ativo</label>
+            <label for="ativo" class="text-sm text-zinc-700 dark:text-zinc-300">Produto ativo</label>
           </div>
         </div>
       </div>
@@ -306,9 +369,11 @@ const categoriaOptions = computed(() => catStore.categorias)
       v-model:visible="deleteModalVisible"
       header="Confirmar exclusão"
       :modal="true"
-      :style="{ width: '360px' }"
+      :style="{ width: '360px', maxWidth: '95vw' }"
     >
-      <p class="text-sm text-zinc-600 py-2">Tem certeza que deseja remover este produto? Esta ação não pode ser desfeita.</p>
+      <p class="text-sm text-zinc-600 dark:text-zinc-300 py-2">
+        Tem certeza que deseja remover este produto? Esta ação não pode ser desfeita.
+      </p>
       <template #footer>
         <div class="flex justify-end gap-3">
           <Button label="Cancelar" text @click="deleteModalVisible = false" class="!rounded-xl" />

@@ -1,4 +1,3 @@
-```vue
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useCategoriaStore } from '@/stores/categoria'
@@ -11,6 +10,7 @@ import InputText from 'primevue/inputtext'
 import Textarea from 'primevue/textarea'
 import InputNumber from 'primevue/inputnumber'
 import ToggleSwitch from 'primevue/toggleswitch'
+import PageHeader from '@/components/common/PageHeader.vue'
 
 import type { Categoria } from '@/types/categoria'
 
@@ -313,53 +313,69 @@ async function doDelete() {
   }
 }
 </script>
-```
-
 
 <template>
-  <div class="space-y-4">
+  <div class="p-4 sm:p-6 space-y-4 sm:space-y-5 max-w-7xl mx-auto">
     <Toast />
 
-    <div class="flex items-center justify-between">
-      <div>
-        <h2 class="text-lg font-bold text-zinc-900">Categorias</h2>
-        <p class="text-sm text-zinc-500">{{ store.categorias.length }} categorias</p>
-      </div>
-      <Button
-        label="Nova categoria"
-        icon="pi pi-plus"
-        class="!bg-orange-500 !border-orange-500 hover:!bg-orange-600 !rounded-xl !font-semibold"
-        @click="abrirModalNovo"
-      />
-    </div>
+    <PageHeader
+      icon="pi pi-tags"
+      title="Categorias"
+      subtitle="Organize os produtos da vitrine"
+      :badge="`${store.categorias.length} ${store.categorias.length === 1 ? 'categoria' : 'categorias'}`"
+    >
+      <template #actions>
+        <Button
+          label="Nova categoria"
+          icon="pi pi-plus"
+          class="w-full sm:w-auto !bg-orange-500 !border-orange-500 hover:!bg-orange-600 !rounded-xl !font-semibold"
+          @click="abrirModalNovo"
+        />
+      </template>
+    </PageHeader>
 
     <p v-if="store.erro" class="text-sm text-red-500">{{ store.erro }}</p>
 
-    <div v-if="store.carregando" class="text-sm text-zinc-500">
-      Carregando categorias...
+    <div v-if="store.carregando" class="flex justify-center py-12">
+      <i class="pi pi-spin pi-spinner text-2xl text-orange-500" />
     </div>
 
-    <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+    <div
+      v-else-if="!store.categorias.length"
+      class="flex flex-col items-center gap-2 py-12 text-zinc-400 bg-white dark:bg-zinc-900
+             border border-zinc-200 dark:border-zinc-800 rounded-2xl"
+    >
+      <i class="pi pi-tags text-3xl" />
+      <span class="text-sm">Nenhuma categoria cadastrada</span>
+    </div>
+
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
       <div
         v-for="cat in store.categorias"
         :key="cat.id"
-        class="bg-white border border-zinc-200 rounded-2xl p-5 flex items-center gap-4"
+        class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl
+               p-4 sm:p-5 shadow-sm flex items-center gap-3 sm:gap-4 min-w-0"
         :class="!cat.ativo && 'opacity-60'"
       >
         <img
           v-if="cat.imagem"
           :src="cat.imagem"
           :alt="cat.nome"
-          class="w-10 h-10 rounded-lg object-cover"
+          class="w-11 h-11 rounded-xl object-cover shrink-0"
         />
-        <div v-else class="w-10 h-10 rounded-lg bg-zinc-100" />
-
-        <div class="flex-1">
-          <p class="font-semibold text-zinc-800">{{ cat.nome }}</p>
-          <p class="text-xs text-zinc-500">{{ cat.descricao }}</p>
+        <div
+          v-else
+          class="w-11 h-11 rounded-xl bg-orange-50 dark:bg-orange-500/10 shrink-0 flex items-center justify-center"
+        >
+          <i class="pi pi-tag text-orange-500" />
         </div>
 
-        <div class="flex items-center gap-2">
+        <div class="flex-1 min-w-0">
+          <p class="font-semibold text-zinc-800 dark:text-zinc-100 truncate">{{ cat.nome }}</p>
+          <p class="text-xs text-zinc-500 dark:text-zinc-400 truncate">{{ cat.descricao || 'Sem descrição' }}</p>
+        </div>
+
+        <div class="flex items-center gap-1 sm:gap-2 shrink-0">
           <ToggleSwitch :model-value="cat.ativo" @update:model-value="() => toggleAtivo(cat)" />
           <Button icon="pi pi-pencil" size="small" text rounded @click="abrirModalEdicao(cat)" />
           <Button icon="pi pi-trash" size="small" text rounded severity="danger" @click="confirmarExclusao(cat.id)" />
@@ -373,33 +389,32 @@ async function doDelete() {
       :header="editing.id ? 'Editar categoria' : 'Nova categoria'"
       :modal="true"
       :closable="!saving"
-      :style="{ width: '420px' }"
+      :style="{ width: '420px', maxWidth: '95vw' }"
       @hide="fecharModal"
     >
       <div class="space-y-4 py-2">
         <div>
-          <label class="text-xs font-semibold text-zinc-600 mb-1 block">Nome *</label>
+          <label class="text-xs font-semibold text-zinc-600 dark:text-zinc-300 mb-1 block">Nome *</label>
           <InputText v-model="editing.nome" class="w-full" placeholder="Ex: Roupas" />
         </div>
 
         <div>
-          <label class="text-xs font-semibold text-zinc-600 mb-1 block">Descrição</label>
+          <label class="text-xs font-semibold text-zinc-600 dark:text-zinc-300 mb-1 block">Descrição</label>
           <Textarea v-model="editing.descricao" class="w-full" rows="3" placeholder="Descrição da categoria" />
         </div>
 
-        <!-- Upload de imagem (arquivo, não URL) -->
         <div>
-          <label class="text-xs font-semibold text-zinc-600 mb-1 block">Imagem</label>
+          <label class="text-xs font-semibold text-zinc-600 dark:text-zinc-300 mb-1 block">Imagem</label>
           <div class="flex items-center gap-3">
             <img
               v-if="previewImagem"
               :src="previewImagem"
-              class="w-12 h-12 rounded-lg object-cover border border-zinc-200"
+              class="w-12 h-12 rounded-lg object-cover border border-zinc-200 dark:border-zinc-700 shrink-0"
               alt="Preview"
             />
-            <div v-else class="w-12 h-12 rounded-lg bg-zinc-100 border border-zinc-200" />
+            <div v-else class="w-12 h-12 rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shrink-0" />
 
-            <div class="flex-1">
+            <div class="flex-1 min-w-0">
               <input
                 type="file"
                 accept="image/*"
@@ -419,13 +434,13 @@ async function doDelete() {
         </div>
 
         <div>
-          <label class="text-xs font-semibold text-zinc-600 mb-1 block">Ordem</label>
+          <label class="text-xs font-semibold text-zinc-600 dark:text-zinc-300 mb-1 block">Ordem</label>
           <InputNumber v-model="editing.ordem" class="w-full" :min="0" showButtons />
         </div>
 
         <div class="flex items-center gap-2">
           <ToggleSwitch v-model="editing.ativo" />
-          <label class="text-sm text-zinc-700">Categoria ativa</label>
+          <label class="text-sm text-zinc-700 dark:text-zinc-300">Categoria ativa</label>
         </div>
       </div>
 
@@ -447,9 +462,9 @@ async function doDelete() {
       v-model:visible="deleteModalVisible"
       header="Confirmar exclusão"
       :modal="true"
-      :style="{ width: '360px' }"
+      :style="{ width: '360px', maxWidth: '95vw' }"
     >
-      <p class="text-sm text-zinc-600 py-2">
+      <p class="text-sm text-zinc-600 dark:text-zinc-300 py-2">
         Tem certeza que deseja remover esta categoria? Esta ação não pode ser desfeita.
       </p>
       <template #footer>

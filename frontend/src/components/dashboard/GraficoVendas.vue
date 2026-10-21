@@ -50,7 +50,7 @@ const chartOptions = {
 </script>
 
 <template>
-  <div class="bg-white dark:bg-zinc-900 rounded-2xl p-6 shadow-sm">
+  <div class="bg-white dark:bg-zinc-900 rounded-2xl p-4 sm:p-6 shadow-sm">
 
     <div class="mb-6">
       <h2 class="text-lg font-bold text-zinc-900 dark:text-white">
@@ -64,21 +64,21 @@ const chartOptions = {
 
     <div
       v-if="dashboard.carregando"
-      class="h-80 flex items-center justify-center"
+      class="h-64 sm:h-80 flex items-center justify-center"
     >
       <i class="pi pi-spin pi-spinner text-2xl text-orange-500" />
     </div>
 
     <div
       v-else-if="!dashboard.dados?.grafico_pedidos?.length"
-      class="h-80 flex items-center justify-center text-zinc-400"
+      class="h-64 sm:h-80 flex items-center justify-center text-zinc-400"
     >
       Nenhuma venda concluído ainda.
     </div>
 
     <div
       v-else
-      class="h-80"
+      class="h-64 sm:h-80"
     >
       <Chart
         type="line"

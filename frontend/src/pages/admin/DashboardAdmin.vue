@@ -8,6 +8,7 @@ import { useDashboardStore } from '@/stores/dashboard'
 import ResumoCard from '@/components/dashboard/ResumoCard.vue'
 import GraficoPedidos from '@/components/dashboard/GraficoPedidos.vue'
 import GraficoVendas from '@/components/dashboard/GraficoVendas.vue'
+import PageHeader from '@/components/common/PageHeader.vue'
 import UltimosPedidos from '@/components/dashboard/UltimosPedidos.vue'
 
 const dashboard = useDashboardStore()
@@ -49,7 +50,14 @@ const ticketMedioFormatado = computed(() =>
 
 <template>
 
-  <div class="space-y-4 sm:space-y-6 p-4 sm:p-6">
+  <div class="space-y-4 sm:space-y-6 p-4 sm:p-6 max-w-7xl mx-auto">
+
+    <PageHeader
+      icon="pi pi-home"
+      title="Dashboard"
+      subtitle="Resumo de vendas e pedidos da sua loja"
+      :badge="dados ? `${dados.cards.total_pedidos} pedidos` : undefined"
+    />
 
     <!-- Carregando -->
     <div

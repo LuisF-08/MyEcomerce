@@ -13,6 +13,11 @@ import Select from 'primevue/select'
 import SelectButton from 'primevue/selectbutton'
 import Avatar from 'primevue/avatar'
 import Divider from 'primevue/divider'
+import PageHeader from '@/components/common/PageHeader.vue'
+
+function fecharDetalhes() {
+  solicitacaoSelecionada.value = null
+}
 
 const toast = useToast()
 const store = useSolicitacaoStore()
@@ -175,128 +180,195 @@ function selecionar(solicitacao: (typeof solicitacoes.value)[number]) {
 </script>
 
 <template>
-  <div class="space-y-5">
+  <div class="p-4 sm:p-6 space-y-4 sm:space-y-5 max-w-7xl mx-auto">
 
-    <!-- Cabeçalho -->
-    <div class="flex items-center gap-3">
-      <div class="w-11 h-11 rounded-xl bg-orange-100 flex items-center justify-center">
-        <i class="pi pi-shopping-bag text-orange-500 text-lg" />
-      </div>
-      <div>
-        <h2 class="text-lg font-bold text-zinc-900">Solicitações</h2>
-        <p class="text-sm text-zinc-500">Pedidos recebidos pelo WhatsApp e pelo Mercado Pago</p>
-      </div>
+    <PageHeader
+      icon="pi pi-inbox"
+      title="Solicitações"
+      subtitle="Pedidos recebidos pelo WhatsApp e pelo Mercado Pago"
+      :badge="`${solicitacoes.length} ${solicitacoes.length === 1 ? 'solicitação' : 'solicitações'}`"
+    />
+
+    <!-- Filtros: rolagem horizontal no mobile -->
+    <div class="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <SelectButton
+        v-model="filtro"
+        :options="filtroOptions"
+        optionLabel="label"
+        dataKey="value"
+        class="flex-nowrap w-max sm:w-auto sm:flex-wrap"
+      >
+        <template #option="{ option }">
+          <div class="flex items-center gap-2 px-1 whitespace-nowrap">
+            <i :class="[option.icon, option.color]" />
+            <span class="font-medium text-sm">{{ option.label }}</span>
+            <span
+              class="text-xs rounded-full px-1.5 py-0.5 min-w-[1.25rem] text-center"
+              :class="filtro.value === option.value
+                ? 'bg-white/20 text-white'
+                : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400'"
+            >
+              {{ quantidadePorStatus(option.value) }}
+            </span>
+          </div>
+        </template>
+      </SelectButton>
     </div>
-
-    <!-- Filtros -->
-    <SelectButton
-      v-model="filtro"
-      :options="filtroOptions"
-      optionLabel="label"
-      dataKey="value"
-      class="flex-wrap"
-    >
-      <template #option="{ option }">
-        <div class="flex items-center gap-2 px-1">
-          <i :class="[option.icon, option.color]" />
-          <span class="font-medium">{{ option.label }}</span>
-          <span
-            class="text-xs rounded-full px-1.5 py-0.5 min-w-[1.25rem] text-center"
-            :class="filtro.value === option.value ? 'bg-white/20 text-white' : 'bg-zinc-100 text-zinc-500'"
-          >
-            {{ quantidadePorStatus(option.value) }}
-          </span>
-        </div>
-      </template>
-    </SelectButton>
 
     <!-- Erro -->
     <div
       v-if="store.erro"
-      class="flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl p-3"
+      class="flex items-center gap-2 text-sm text-red-600 bg-red-50 dark:bg-red-500/10 dark:text-red-400
+             border border-red-100 dark:border-red-500/30 rounded-xl p-3"
     >
       <i class="pi pi-exclamation-triangle" />
       {{ store.erro }}
     </div>
 
-    <div class="flex flex-col lg:flex-row gap-4 items-stretch lg:items-start">
+    <div class="flex flex-col xl:flex-row gap-4 items-stretch xl:items-start">
 
-      <!-- Tabela -->
-      <div class="flex-1 min-w-0 w-full bg-white border border-zinc-200 rounded-2xl overflow-x-auto shadow-sm">
-        <DataTable
-          :value="filtradas"
-          v-model:selection="solicitacaoSelecionada"
-          selectionMode="single"
-          dataKey="id"
-          :loading="store.carregando"
-          :paginator="filtradas.length > 10"
-          :rows="10"
-          class="!text-sm"
-          :rowClass="(data) => solicitacaoSelecionada?.id === data.id ? '!bg-orange-50' : 'cursor-pointer'"
-          @row-click="(event) => selecionar(event.data)"
-        >
-          <template #empty>
-            <div class="flex flex-col items-center gap-2 py-10 text-zinc-400">
-              <i class="pi pi-inbox text-3xl" />
-              <span class="text-sm">Nenhuma solicitação encontrada</span>
-            </div>
-          </template>
+      <div class="flex-1 min-w-0 w-full">
 
-          <Column field="id" header="ID" style="width: 70px">
-            <template #body="{ data }">
-              <span class="font-mono text-zinc-400">#{{ data.id }}</span>
-            </template>
-          </Column>
+        <!-- MOBILE / TABLET: cards -->
+        <div class="lg:hidden space-y-3">
+          <div v-if="store.carregando" class="flex justify-center py-12">
+            <i class="pi pi-spin pi-spinner text-2xl text-orange-500" />
+          </div>
 
-          <Column field="nome" header="Cliente">
-            <template #body="{ data }">
-              <div class="flex items-center gap-2">
-                <Avatar
-                  :label="iniciais(data.nome)"
-                  shape="circle"
-                  class="!w-7 !h-7 !text-xs !bg-orange-100 !text-orange-600 font-semibold"
-                />
-                <span class="font-medium text-zinc-800">{{ data.nome }}</span>
-              </div>
-            </template>
-          </Column>
+          <div
+            v-else-if="!filtradas.length"
+            class="flex flex-col items-center gap-2 py-12 text-zinc-400 bg-white dark:bg-zinc-900
+                   border border-zinc-200 dark:border-zinc-800 rounded-2xl"
+          >
+            <i class="pi pi-inbox text-3xl" />
+            <span class="text-sm">Nenhuma solicitação encontrada</span>
+          </div>
 
-          <Column field="criado_em" header="Data">
-            <template #body="{ data }">
-              <div class="flex items-center gap-1.5 text-zinc-500">
-                <i class="pi pi-calendar text-xs" />
-                {{ formatDate(data.criado_em) }}
-              </div>
-            </template>
-          </Column>
-
-          <Column field="total" header="Total">
-            <template #body="{ data }">
-              <span class="font-semibold text-zinc-800">{{ preco(data.total) }}</span>
-            </template>
-          </Column>
-
-          <Column field="status" header="Status">
-            <template #body="{ data }">
-              <Tag
-                :value="infoStatus(data.status).label"
-                :severity="infoStatus(data.status).severity"
-                :icon="infoStatus(data.status).icon"
+          <button
+            v-for="s in filtradas"
+            :key="s.id"
+            type="button"
+            class="w-full text-left bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800
+                   rounded-2xl p-4 shadow-sm active:scale-[0.99] transition-all"
+            :class="solicitacaoSelecionada?.id === s.id && 'ring-2 ring-orange-500/40'"
+            @click="selecionar(s)"
+          >
+            <div class="flex items-center gap-3">
+              <Avatar
+                :label="iniciais(s.nome)"
+                shape="circle"
+                class="!w-10 !h-10 shrink-0 !bg-orange-100 !text-orange-600 dark:!bg-orange-500/10 dark:!text-orange-400 font-semibold"
               />
+              <div class="min-w-0 flex-1">
+                <p class="font-semibold text-zinc-800 dark:text-zinc-100 truncate">{{ s.nome }}</p>
+                <p class="text-xs text-zinc-400 font-mono">#{{ s.id }} · {{ formatDate(s.criado_em) }}</p>
+              </div>
+              <i class="pi pi-chevron-right text-xs text-zinc-300 dark:text-zinc-600" />
+            </div>
+
+            <div class="flex items-center justify-between mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800">
+              <Tag
+                :value="infoStatus(s.status).label"
+                :severity="infoStatus(s.status).severity"
+                :icon="infoStatus(s.status).icon"
+              />
+              <span class="font-bold text-zinc-900 dark:text-white">{{ preco(s.total) }}</span>
+            </div>
+          </button>
+        </div>
+
+        <!-- DESKTOP: tabela -->
+        <div
+          class="hidden lg:block bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800
+                 rounded-2xl overflow-hidden shadow-sm"
+        >
+          <DataTable
+            :value="filtradas"
+            v-model:selection="solicitacaoSelecionada"
+            selectionMode="single"
+            dataKey="id"
+            :loading="store.carregando"
+            :paginator="filtradas.length > 10"
+            :rows="10"
+            class="!text-sm"
+            :rowClass="(data) => solicitacaoSelecionada?.id === data.id ? '!bg-orange-50 dark:!bg-orange-500/10' : 'cursor-pointer'"
+            @row-click="(event) => selecionar(event.data)"
+          >
+            <template #empty>
+              <div class="flex flex-col items-center gap-2 py-10 text-zinc-400">
+                <i class="pi pi-inbox text-3xl" />
+                <span class="text-sm">Nenhuma solicitação encontrada</span>
+              </div>
             </template>
-          </Column>
-        </DataTable>
+
+            <Column field="id" header="ID" style="width: 70px">
+              <template #body="{ data }">
+                <span class="font-mono text-zinc-400">#{{ data.id }}</span>
+              </template>
+            </Column>
+
+            <Column field="nome" header="Cliente">
+              <template #body="{ data }">
+                <div class="flex items-center gap-2">
+                  <Avatar
+                    :label="iniciais(data.nome)"
+                    shape="circle"
+                    class="!w-7 !h-7 !text-xs !bg-orange-100 !text-orange-600 dark:!bg-orange-500/10 dark:!text-orange-400 font-semibold"
+                  />
+                  <span class="font-medium text-zinc-800 dark:text-zinc-100">{{ data.nome }}</span>
+                </div>
+              </template>
+            </Column>
+
+            <Column field="criado_em" header="Data">
+              <template #body="{ data }">
+                <div class="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
+                  <i class="pi pi-calendar text-xs" />
+                  {{ formatDate(data.criado_em) }}
+                </div>
+              </template>
+            </Column>
+
+            <Column field="total" header="Total">
+              <template #body="{ data }">
+                <span class="font-semibold text-zinc-800 dark:text-zinc-100">{{ preco(data.total) }}</span>
+              </template>
+            </Column>
+
+            <Column field="status" header="Status">
+              <template #body="{ data }">
+                <Tag
+                  :value="infoStatus(data.status).label"
+                  :severity="infoStatus(data.status).severity"
+                  :icon="infoStatus(data.status).icon"
+                />
+              </template>
+            </Column>
+          </DataTable>
+        </div>
       </div>
 
-      <!-- Painel de detalhes -->
+      <!-- Detalhes: tela cheia abaixo de xl, painel lateral a partir de xl -->
       <div
         v-if="solicitacaoSelecionada"
-        class="w-full lg:w-80 lg:shrink-0 bg-white border border-zinc-200 rounded-2xl p-5 space-y-4 shadow-sm"
-        >
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <i class="pi pi-file text-zinc-400" />
-            <h3 class="font-bold text-zinc-900">#{{ solicitacaoSelecionada.id }}</h3>
+        class="fixed inset-0 z-[60] overflow-y-auto bg-white dark:bg-zinc-950 p-4 sm:p-6 space-y-4
+               xl:static xl:z-auto xl:w-80 xl:shrink-0 xl:overflow-visible
+               xl:bg-white xl:dark:bg-zinc-900 xl:border xl:border-zinc-200 xl:dark:border-zinc-800
+               xl:rounded-2xl xl:p-5 xl:shadow-sm"
+      >
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2 min-w-0">
+            <button
+              type="button"
+              class="xl:hidden w-9 h-9 -ml-2 shrink-0 flex items-center justify-center rounded-full
+                     text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+              aria-label="Voltar"
+              @click="fecharDetalhes"
+            >
+              <i class="pi pi-arrow-left" />
+            </button>
+            <i class="hidden xl:inline pi pi-file text-zinc-400" />
+            <h3 class="font-bold text-zinc-900 dark:text-white">Pedido #{{ solicitacaoSelecionada.id }}</h3>
           </div>
           <Tag
             :value="infoStatus(solicitacaoSelecionada.status).label"
@@ -309,11 +381,11 @@ function selecionar(solicitacao: (typeof solicitacoes.value)[number]) {
           <Avatar
             :label="iniciais(solicitacaoSelecionada.nome)"
             shape="circle"
-            class="!w-10 !h-10 !bg-orange-100 !text-orange-600 font-semibold"
+            class="!w-10 !h-10 !bg-orange-100 !text-orange-600 dark:!bg-orange-500/10 dark:!text-orange-400 font-semibold"
           />
-          <div class="text-sm space-y-0.5">
-            <p class="font-semibold text-zinc-800">{{ solicitacaoSelecionada.nome }}</p>
-            <p class="text-zinc-500 flex items-center gap-1.5">
+          <div class="text-sm space-y-0.5 min-w-0">
+            <p class="font-semibold text-zinc-800 dark:text-zinc-100 truncate">{{ solicitacaoSelecionada.nome }}</p>
+            <p class="text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
               <i class="pi pi-phone text-xs" />
               {{ solicitacaoSelecionada.telefone }}
             </p>
@@ -321,11 +393,11 @@ function selecionar(solicitacao: (typeof solicitacoes.value)[number]) {
         </div>
 
         <div class="text-sm space-y-1.5">
-          <p v-if="solicitacaoSelecionada.email" class="text-zinc-500 flex items-center gap-1.5">
+          <p v-if="solicitacaoSelecionada.email" class="text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5 break-all">
             <i class="pi pi-envelope text-xs" />
             {{ solicitacaoSelecionada.email }}
           </p>
-          <p v-if="endereco(solicitacaoSelecionada)" class="text-zinc-500 flex items-start gap-1.5">
+          <p v-if="endereco(solicitacaoSelecionada)" class="text-zinc-500 dark:text-zinc-400 flex items-start gap-1.5">
             <i class="pi pi-map-marker text-xs mt-0.5" />
             <span>{{ endereco(solicitacaoSelecionada) }}</span>
           </p>
@@ -334,7 +406,7 @@ function selecionar(solicitacao: (typeof solicitacoes.value)[number]) {
         <Divider class="!my-1" />
 
         <div>
-          <p class="text-xs font-semibold text-zinc-500 uppercase mb-2 flex items-center gap-1.5">
+          <p class="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase mb-2 flex items-center gap-1.5">
             <i class="pi pi-shopping-cart text-xs" />
             Itens
           </p>
@@ -343,13 +415,13 @@ function selecionar(solicitacao: (typeof solicitacoes.value)[number]) {
             <div
               v-for="item in solicitacaoSelecionada.itens"
               :key="item.id ?? `${item.produto}-${item.quantidade}`"
-              class="flex justify-between text-sm py-1.5 border-b border-zinc-100 last:border-0"
+              class="flex justify-between gap-3 text-sm py-1.5 border-b border-zinc-100 dark:border-zinc-800 last:border-0"
             >
-              <span class="text-zinc-700">
+              <span class="text-zinc-700 dark:text-zinc-300">
                 {{ item.produto_nome || 'Produto' }} x{{ item.quantidade }}
                 <span v-if="item.variacao" class="text-zinc-400">({{ item.variacao }})</span>
               </span>
-              <span class="font-semibold">{{ preco(item.subtotal) }}</span>
+              <span class="font-semibold shrink-0 text-zinc-800 dark:text-zinc-100">{{ preco(item.subtotal) }}</span>
             </div>
           </div>
 
@@ -358,7 +430,7 @@ function selecionar(solicitacao: (typeof solicitacoes.value)[number]) {
             Nenhum item encontrado.
           </p>
 
-          <div class="flex justify-between font-bold text-zinc-900 mt-2 pt-2 border-t border-zinc-200">
+          <div class="flex justify-between font-bold text-zinc-900 dark:text-white mt-2 pt-2 border-t border-zinc-200 dark:border-zinc-800">
             <span>Total</span>
             <span class="text-orange-500">{{ preco(solicitacaoSelecionada.total) }}</span>
           </div>
@@ -366,14 +438,14 @@ function selecionar(solicitacao: (typeof solicitacoes.value)[number]) {
 
         <div
           v-if="solicitacaoSelecionada.observacao"
-          class="text-xs text-zinc-600 bg-zinc-50 rounded-xl p-3 flex gap-2"
+          class="text-xs text-zinc-600 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-800/60 rounded-xl p-3 flex gap-2"
         >
           <i class="pi pi-comment text-zinc-400 mt-0.5" />
           <span>{{ solicitacaoSelecionada.observacao }}</span>
         </div>
 
         <div>
-          <p class="text-xs font-semibold text-zinc-500 uppercase mb-2">Alterar status</p>
+          <p class="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase mb-2">Alterar status</p>
           <Select
             :model-value="solicitacaoSelecionada.status"
             :options="statusOptions"
