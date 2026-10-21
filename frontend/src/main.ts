@@ -10,6 +10,8 @@ import './assets/main.css'
 import App from './App.vue'
 import router from './router'
 import { useAuthStore } from '@/stores/auth' // Import necessário para recuperar a sessão
+import Ripple from 'primevue/ripple'
+
 
 const MyPreset = definePreset(Aura, {
   semantic: {
@@ -65,6 +67,7 @@ app.use(PrimeVue, {
 
 app.use(ToastService)
 app.use(ConfirmationService)
+app.directive('ripple', Ripple)
 
 const authStore = useAuthStore()
 if (typeof authStore.carregarUsuario === 'function') {
