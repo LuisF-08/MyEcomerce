@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
+import BrandLogo from '@/components/common/BrandLogo.vue'
 
 const props = defineProps<{ mobileOpen?: boolean }>()
 const emit = defineEmits<{ close: [] }>()
@@ -82,39 +83,31 @@ onMounted(() => {
       @mouseenter="handleMouseEnter"
       @mouseleave="handleMouseLeave"
     >
-      <!-- Header -->
-      <div class="flex items-center justify-between px-3 pt-4 pb-3 min-h-[56px]">
-        <div class="flex items-center gap-2 overflow-hidden">
-          <div class="w-9 h-9 shrink-0 bg-orange-500 rounded-full flex items-center justify-center shadow-lg shadow-orange-500/20">
-            <i class="pi pi-bolt text-white text-lg" />
-          </div>
-          <span
-            v-show="isExpanded"
-            class="font-bold text-zinc-950 dark:text-white text-lg tracking-tight whitespace-nowrap"
-          >
-            Catálogo<span class="text-orange-500">.</span>
-          </span>
-        </div>
-
-        <!-- Fixar/recolher: só desktop -->
-        <button
-          v-show="isExpanded"
-          @click="togglePin"
-          class="hidden md:flex w-8 h-8 shrink-0 items-center justify-center rounded-full text-zinc-500 dark:text-zinc-400 transition-colors duration-200 hover:bg-orange-50 dark:hover:bg-orange-950/30 hover:text-orange-500"
-          :aria-label="pinned ? 'Recolher menu' : 'Fixar menu'"
-        >
-          <i :class="['pi', pinned ? 'pi-angle-left' : 'pi-angle-right']" />
-        </button>
-
-        <!-- Fechar: só mobile -->
-        <button
-          class="md:hidden w-8 h-8 shrink-0 flex items-center justify-center rounded-full text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/50"
-          aria-label="Fechar menu"
-          @click="emit('close')"
-        >
-          <i class="pi pi-times" />
-        </button>
+    <!-- Header -->
+    <div class="flex items-center justify-between px-3 pt-4 pb-3 min-h-[56px]">
+      <div class="flex items-center overflow-hidden">
+        <BrandLogo size="md" :show-name="isExpanded" />
       </div>
+    
+      <!-- Fixar/recolher: só desktop -->
+      <button
+        v-show="isExpanded"
+        @click="togglePin"
+        class="hidden md:flex w-8 h-8 shrink-0 items-center justify-center rounded-full text-zinc-500 dark:text-zinc-400 transition-colors duration-200 hover:bg-orange-50 dark:hover:bg-orange-950/30 hover:text-orange-500"
+        :aria-label="pinned ? 'Recolher menu' : 'Fixar menu'"
+      >
+        <i :class="['pi', pinned ? 'pi-angle-left' : 'pi-angle-right']" />
+      </button>
+    
+      <!-- Fechar: só mobile -->
+      <button
+        class="md:hidden w-8 h-8 shrink-0 flex items-center justify-center rounded-full text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/50"
+        aria-label="Fechar menu"
+        @click="emit('close')"
+      >
+        <i class="pi pi-times" />
+      </button>
+    </div>
 
       <!-- Navegação -->
       <nav class="flex-1 overflow-y-auto overflow-x-hidden px-2">

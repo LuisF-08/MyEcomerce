@@ -67,27 +67,44 @@ class CriarPagamentoView(APIView):
 class ConfirmarPagamentoView(APIView):
     permission_classes = [AllowAny]
     authentication_classes = []
-    
+
     def post(self, request):
         serializer = ConfirmarPagamentoSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
+
         try:
             pagamento = conciliar_pagamento(serializer.validated_data["payment_id"])
         except PagamentoInvalido as e:
             return Response(
                 {"detail": str(e)},
-                status=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_400_BAD_REQUEST,
             )
         except ErroMercadoPago:
             return Response(
                 {"detail": "Não foi possível consultar o pagamento."},
                 status=status.HTTP_502_BAD_GATEWAY,
             )
-        return Response(
-            {
-                "status": pagamento.status,
-                "solicitacao": pagamento.solicitacao_id,
+
+        resposta = {
+            "status": pagamento.status,
+            "solicitacao": pagamento.solicitacao_id,
+        }
+
+        # Só devolve o resumo do pedido quando o pagamento foi aprovado
+        if pagamento.status == Pagamento.Status.APROVADO:
+            solicitacao = pagamento.solicitacao
+            resposta["pedido"] = {
+                "id": solicitacao.pk,
+                "total": str(solicitacao.total),
+                "itens": [
+                    {
+                        "produto_nome": item.produto_nome,
+                        "quantidade": item.quantidade,
+                        "variacao": item.variacao,
+                        "subtotal": str(item.subtotal),
+                    }
+                    for item in solicitacao.itens.order_by("id")
+                ],
             }
-        )
-        
+
+        return Response(resposta)

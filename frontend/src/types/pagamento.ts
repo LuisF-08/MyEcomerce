@@ -35,8 +35,22 @@ export interface CriarPagamentoResposta {
     init_point: string
 }
 
+export interface ItemPedidoConfirmado {
+    produto_nome: string
+    quantidade: number
+    variacao: string
+    subtotal: string
+}
+
+export interface PedidoConfirmado {
+    id: number
+    total: string
+    itens: ItemPedidoConfirmado[]
+}
+
 // Resposta de POST /pagamentos/confirmar/
 export interface ConfirmarPagamentoResposta {
     status: StatusPagamento
     solicitacao: number
+    pedido?: PedidoConfirmado
 }

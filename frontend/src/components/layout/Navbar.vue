@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useCarrinhoStore } from "@/stores/carrinho"
+import BrandLogo from '../common/BrandLogo.vue'
 
 const carrinho = useCarrinhoStore()
 
@@ -38,11 +39,8 @@ const closeMenu = () => {
         </button>
 
         <!-- Logo -->
-        <RouterLink :to="{ name: 'home' }" @click="closeMenu" class="flex items-center gap-2 no-underline group">
-          <div class="w-9 h-9 bg-orange-500 rounded-full flex items-center justify-center shadow-lg shadow-orange-500/20 transition-transform group-hover:scale-105">
-            <i class="pi pi-bolt text-white text-lg" />
-          </div>
-          <span class="font-bold text-zinc-950 dark:text-white text-xl tracking-tight">Catálogo<span class="text-orange-500">.</span></span>
+        <RouterLink :to="{ name: 'home' }" @click="closeMenu" class="no-underline transition-transform hover:scale-[1.02] min-w-0">
+          <BrandLogo size="md" />
         </RouterLink>
       </div>
 

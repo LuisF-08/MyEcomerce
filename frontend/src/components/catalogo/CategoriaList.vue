@@ -2,10 +2,14 @@
 </script>
 
 <template>
-  <section class="section-header">
-    <span class="eyebrow">Navegue por</span>
-    <h1 class="title-heading">Categorias</h1>
-    <span class="accent-line" />
+  <section class="flex flex-col items-center text-center mb-6 sm:mb-7 px-4">
+    <span class="text-[11px] font-bold tracking-[0.14em] uppercase text-orange-600 dark:text-orange-400 mb-1">
+      Navegue por
+    </span>
+    <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+      Categorias
+    </h2>
+    <span class="mt-2.5 h-[3px] w-10 rounded-full bg-orange-500" />
   </section>
 </template>
 
