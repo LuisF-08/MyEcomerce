@@ -22,11 +22,23 @@ function paraMinutos(h: string): number {
 
 export function lojaAberta(loja: Loja | null | undefined): boolean {
   if (!loja?.horario_funcionamento || !loja.horario_fechamento) return false
-  const agora = new Date()
-  const dia = agora.getDay()
+
+  // Hora e dia atuais no fuso de Brasília (independe do aparelho do visitante)
+  const partes = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Sao_Paulo',
+    weekday: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).formatToParts(new Date())
+
+  const pegar = (tipo: string) => partes.find((p) => p.type === tipo)?.value ?? ''
+  const dia = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(pegar('weekday'))
+  const minutos = (Number(pegar('hour')) % 24) * 60 + Number(pegar('minute'))
+
   const ultimoDia = loja.dias_funcionamento === 'SS' ? 6 : 5
   if (dia === 0 || dia > ultimoDia) return false
-  const minutos = agora.getHours() * 60 + agora.getMinutes()
+
   return (
     minutos >= paraMinutos(loja.horario_funcionamento) &&
     minutos < paraMinutos(loja.horario_fechamento)
